@@ -1,0 +1,97 @@
+import type { FaDict } from './fa';
+
+const tr: FaDict = {
+  meta: {
+    title: 'Almanya Eğitim Göçü',
+    description: 'Türkiye üzerinden Almanya\'ya eğitim göçü için profesyonel hizmetler',
+  },
+  nav: {
+    services: 'Hizmetler',
+    process: 'Süreç',
+    education: 'Eğitim',
+    guide: 'Kapsamlı Rehber',
+    turkey: 'Türkiye İkamet',
+    turkeyCosts: 'Türkiye Maliyetleri',
+    livingCosts: 'Almanya Maliyetleri',
+    ausbildung: 'Ausbildung',
+    testimonials: 'Yorumlar',
+    contact: 'İletişim',
+    login: 'Giriş',
+    register: 'Kayıt',
+    logout: 'Çıkış',
+    adminPanel: 'Yönetici Paneli',
+    dashboard: 'Kullanıcı Paneli',
+    evaluation: 'Ücretsiz Değerlendirme',
+  },
+  hero: {
+    title: 'Türkiye Üzerinden Almanya\'ya Eğitim Göçü',
+    subtitle: 'Türkiye\'den Almanya\'ya eğitim göçü yolunuzu kolaylaştırmak için yanınızdayız.',
+    ctaConsult: '🚀 Ücretsiz Danışmanlık',
+    ctaProcess: '📋 İşlem Adımları',
+    writeReview: '📝 Yorumunuzu Yazın',
+    basedOn: '{n} müşteri yorumuna göre',
+    stats: {
+      students: 'Başarılı Öğrenci',
+      universities: 'Ortak Üniversite',
+      success: 'Başarı Oranı',
+      experience: 'Yıl Deneyim',
+    },
+  },
+  services: {
+    title: 'Hizmetlerimiz',
+    subtitle: 'Göç sürecinin her aşamasında yanınızdayız',
+    items: [
+      { icon: '📋', title: 'Öğrenci İkameti', text: 'Türkiye\'den öğrenci ikametinizin tüm süreçlerini yürütüyoruz.' },
+      { icon: '🏠', title: 'Ev Bulma', text: 'Almanya\'ya gelmeden uygun konut bulmanıza yardım ediyoruz.' },
+      { icon: '🤝', title: 'Yerleşim Desteği', text: 'Türkiye\'deki ikametiniz boyunca ve Almanya\'da yanınızdayız.' },
+      { icon: '🎓', title: 'Üniversite Seçimi', text: 'Hedeflerinize uygun en iyi üniversite ve bölümü seçmenize yardım ederiz.' },
+      { icon: '📄', title: 'Belge Hazırlama', text: 'Kayıt ve ikamet için gerekli tüm belgeleri hazırlamada yardım.' },
+      { icon: '💼', title: 'Yarı Zamanlı İş', text: 'Yarı zamanlı iş bulma ve öğrenci çalışma kuralları rehberliği.' },
+    ],
+  },
+  process: {
+    title: 'Çalışma Sürecimiz',
+    subtitle: 'Eğitim göçünüzün adım adım süreci',
+    steps: [
+      { title: 'Ücretsiz İlk Danışmanlık', text: 'Eğitim ve mali durumunuzu inceleyerek en iyi yolu belirleriz', time: 'Süre: 1-2 saat' },
+      { title: 'Üniversite ve Bölüm Seçimi', text: 'Uygun üniversite seçimi ve istediğiniz bölüme kayıt', time: 'Süre: 1-2 hafta' },
+      { title: 'Belge Hazırlığı', text: 'Öğrenci ikameti için gereken tüm belgelerin toplanması ve tercümesi', time: 'Süre: 2-4 hafta' },
+      { title: 'Vize Başvurusu', text: 'Türkiye\'deki Almanya Konsolosluğu\'na öğrenci vizesi başvurusu', time: 'Süre: 4-8 hafta' },
+      { title: 'Konut Bulma', text: 'Seyahat öncesinde uygun ev veya yurt bulma', time: 'Süre: 1-3 hafta' },
+      { title: 'Seyahat ve Yerleşim', text: 'Seyahat aşamasında eşlik ve Almanya\'da yerleşim desteği', time: 'Süre: Sürekli destek' },
+    ],
+  },
+  testimonials: {
+    title: 'Müşteri Yorumları',
+    subtitle: 'Bizimle yolculuk edenlerin deneyimleri',
+    empty: 'Henüz yorum yok.',
+  },
+  reviewForm: {
+    title: 'Yorum Bırakın',
+    name: 'Ad',
+    email: 'E-posta (isteğe bağlı)',
+    rating: 'Puan',
+    titleField: 'Başlık (isteğe bağlı)',
+    content: 'Yorum metni',
+    submit: 'Gönder',
+    cancel: 'İptal',
+    success: 'Yorumunuz alındı ve onay sonrası yayınlanacak.',
+  },
+  contactForm: {
+    title: 'Ücretsiz Danışmanlık İste',
+    name: 'Ad Soyad',
+    email: 'E-posta',
+    phone: 'Telefon',
+    subject: 'Konu',
+    message: 'Mesajınız',
+    serviceType: 'Hizmet türü',
+    submit: 'Talebi Gönder',
+    success: 'Talebiniz başarıyla alındı. En kısa sürede size dönüş yapacağız.',
+    error: 'Gönderim sırasında bir sorun oluştu. Tekrar deneyin.',
+  },
+  footer: {
+    rights: 'Tüm hakları saklıdır',
+  },
+};
+
+export default tr;

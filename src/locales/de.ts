@@ -1,0 +1,97 @@
+import type { FaDict } from './fa';
+
+const de: FaDict = {
+  meta: {
+    title: 'Studienmigration nach Deutschland',
+    description: 'Professionelle Dienstleistungen für die Studienmigration nach Deutschland über die Türkei',
+  },
+  nav: {
+    services: 'Dienstleistungen',
+    process: 'Ablauf',
+    education: 'Studium',
+    guide: 'Kompletter Leitfaden',
+    turkey: 'Türkei Aufenthalt',
+    turkeyCosts: 'Türkei Kosten',
+    livingCosts: 'Deutschland Kosten',
+    ausbildung: 'Ausbildung',
+    testimonials: 'Bewertungen',
+    contact: 'Kontakt',
+    login: 'Anmelden',
+    register: 'Registrieren',
+    logout: 'Abmelden',
+    adminPanel: 'Admin-Panel',
+    dashboard: 'Benutzerbereich',
+    evaluation: 'Kostenlose Bewertung',
+  },
+  hero: {
+    title: 'Studienmigration nach Deutschland über die Türkei',
+    subtitle: 'Wir begleiten Sie auf Ihrem Weg von der Türkei nach Deutschland — von der Aufenthaltserlaubnis bis zur Wohnung.',
+    ctaConsult: '🚀 Kostenlose Beratung',
+    ctaProcess: '📋 Ablaufschritte',
+    writeReview: '📝 Bewertung schreiben',
+    basedOn: 'Basierend auf {n} Kundenbewertungen',
+    stats: {
+      students: 'Erfolgreiche Studenten',
+      universities: 'Partnerunis',
+      success: '% Erfolgsquote',
+      experience: 'Jahre Erfahrung',
+    },
+  },
+  services: {
+    title: 'Unsere Dienstleistungen',
+    subtitle: 'Wir sind in jeder Phase Ihrer Migration an Ihrer Seite',
+    items: [
+      { icon: '📋', title: 'Studierendenaufenthalt', text: 'Wir übernehmen alle Schritte für Ihren Studierendenaufenthalt aus der Türkei.' },
+      { icon: '🏠', title: 'Wohnungssuche', text: 'Hilfe bei der Suche nach einer Unterkunft in Deutschland vor der Reise.' },
+      { icon: '🤝', title: 'Integration', text: 'Wir stehen Ihnen in der Türkei und nach Ankunft in Deutschland zur Seite.' },
+      { icon: '🎓', title: 'Universitätswahl', text: 'Beratung zur Auswahl der besten Universität und des passenden Studiengangs.' },
+      { icon: '📄', title: 'Dokumentenvorbereitung', text: 'Hilfe bei Vorbereitung und Übersetzung aller notwendigen Unterlagen.' },
+      { icon: '💼', title: 'Nebenjob', text: 'Hilfe bei der Suche nach einem Nebenjob und Beratung zu Arbeitsregeln.' },
+    ],
+  },
+  process: {
+    title: 'Unser Ablauf',
+    subtitle: 'Schritt-für-Schritt Migration',
+    steps: [
+      { title: 'Kostenlose Erstberatung', text: 'Analyse Ihrer Bildungs- und Finanzlage und Festlegung des besten Wegs', time: 'Dauer: 1-2 Stunden' },
+      { title: 'Universitäts- und Studienwahl', text: 'Auswahl der passenden Uni und Einschreibung', time: 'Dauer: 1-2 Wochen' },
+      { title: 'Dokumentenvorbereitung', text: 'Sammeln und Übersetzen aller benötigten Unterlagen', time: 'Dauer: 2-4 Wochen' },
+      { title: 'Visumantrag', text: 'Antrag auf Studierendenvisum beim deutschen Konsulat in der Türkei', time: 'Dauer: 4-8 Wochen' },
+      { title: 'Wohnungssuche', text: 'Suche nach Wohnung oder Wohnheim vor der Reise', time: 'Dauer: 1-3 Wochen' },
+      { title: 'Reise und Ankunft', text: 'Begleitung der Reise und Hilfe bei der Ankunft in Deutschland', time: 'Dauer: Laufende Unterstützung' },
+    ],
+  },
+  testimonials: {
+    title: 'Kundenbewertungen',
+    subtitle: 'Erfahrungen unserer Kunden',
+    empty: 'Noch keine Bewertungen.',
+  },
+  reviewForm: {
+    title: 'Bewertung abgeben',
+    name: 'Name',
+    email: 'E-Mail (optional)',
+    rating: 'Bewertung',
+    titleField: 'Titel (optional)',
+    content: 'Bewertungstext',
+    submit: 'Senden',
+    cancel: 'Abbrechen',
+    success: 'Ihre Bewertung wurde gespeichert und wird nach Prüfung veröffentlicht.',
+  },
+  contactForm: {
+    title: 'Kostenlose Beratung anfragen',
+    name: 'Voller Name',
+    email: 'E-Mail',
+    phone: 'Telefon',
+    subject: 'Betreff',
+    message: 'Ihre Nachricht',
+    serviceType: 'Servicetyp',
+    submit: 'Anfrage senden',
+    success: 'Ihre Anfrage wurde empfangen. Wir melden uns bald.',
+    error: 'Beim Senden ist ein Fehler aufgetreten. Bitte erneut versuchen.',
+  },
+  footer: {
+    rights: 'Alle Rechte vorbehalten',
+  },
+};
+
+export default de;
