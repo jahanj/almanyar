@@ -160,3 +160,4 @@ docker compose exec app npx prisma migrate deploy
 | `npx prisma studio` | UI گرافیکی دیتابیس |
 | `npx prisma migrate dev` | ایجاد migration جدید |
 | `docker compose logs -f app` | لاگ‌های اپ |
+# germanize
