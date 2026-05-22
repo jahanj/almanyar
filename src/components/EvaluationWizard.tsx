@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { IRANIAN_PROVINCES, TURKISH_PROVINCES } from '@/lib/turkish-provinces';
 
 type Pref = { university: string; field: string; degree: string };
+
+type Country = 'IR' | 'TR' | 'OTHER' | '';
 
 type FormState = {
   fullName: string;
@@ -14,6 +17,8 @@ type FormState = {
   mobile: string;
   phone: string;
   email: string;
+  country: Country;
+  /** Iranian or Turkish province name when country !== OTHER; free text otherwise. */
   province: string;
   germanLevel: string;
   hasIelts: boolean;
@@ -38,7 +43,8 @@ type FormState = {
 
 const initialState: FormState = {
   fullName: '', gender: '', maritalStatus: '', birthDate: '', militaryStatus: '',
-  hasChildUnder18: false, mobile: '', phone: '', email: '', province: '',
+  hasChildUnder18: false, mobile: '', phone: '', email: '',
+  country: '', province: '',
   germanLevel: '', hasIelts: false, ieltsScore: '', hasToefl: false, toeflScore: '',
   diplomaField: '', diplomaGpa: '', lastDegree: '', bachelorUniversity: '',
   bachelorField: '', bachelorGpa: '', targetDegree: '', targetPreferences: [],
@@ -54,11 +60,8 @@ const STEPS = [
   'اطلاعات تکمیلی',
 ];
 
-const provinces = [
-  'تهران', 'البرز', 'اصفهان', 'فارس', 'خراسان رضوی', 'آذربایجان شرقی',
-  'آذربایجان غربی', 'خوزستان', 'مازندران', 'گیلان', 'کرمان', 'یزد', 'قم',
-  'مرکزی', 'گلستان', 'همدان', 'کرمانشاه', 'سایر',
-];
+// localStorage key — bumped when FormState shape changes to invalidate old drafts.
+const STORAGE_KEY = 'almanyar_eval_v1';
 
 export default function EvaluationWizard() {
   const [step, setStep] = useState(0);
@@ -66,6 +69,36 @@ export default function EvaluationWizard() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hpRef = useRef<HTMLInputElement>(null);
+
+  // Hydrate from localStorage on mount, then persist on every change (debounced).
+  // The first effect runs once and only sets state if a draft exists.
+  const hydrated = useRef(false);
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const draft = JSON.parse(raw) as Partial<FormState>;
+        setForm((prev) => ({ ...prev, ...draft }));
+      }
+    } catch {
+      /* corrupt entry — ignore */
+    } finally {
+      hydrated.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated.current) return;
+    const t = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
+      } catch {
+        /* quota full / private mode — ignore */
+      }
+    }, 250);
+    return () => window.clearTimeout(t);
+  }, [form]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -87,6 +120,7 @@ export default function EvaluationWizard() {
       if (form.fullName.trim().length < 2) return 'نام و نام خانوادگی را وارد کنید';
       if (!form.mobile.trim()) return 'شماره موبایل را وارد کنید';
       if (!/^\S+@\S+\.\S+$/.test(form.email)) return 'ایمیل معتبر وارد کنید';
+      if (!form.country) return 'کشور محل اقامت را انتخاب کنید';
     }
     return null;
   };
@@ -106,11 +140,19 @@ export default function EvaluationWizard() {
   };
 
   const submit = async () => {
+    // Honeypot: a real browser leaves this field blank because it's visually
+    // hidden + tab-skipped. Bots that auto-fill form fields trip it.
+    if (hpRef.current && hpRef.current.value.trim() !== '') {
+      // Pretend success so the bot moves on, but never POST.
+      setDone(true);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
       const payload = {
         ...form,
+        country: form.country || null,
         gender: form.gender || null,
         maritalStatus: form.maritalStatus || null,
         birthDate: form.birthDate || null,
@@ -140,6 +182,7 @@ export default function EvaluationWizard() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'خطا در ارسال فرم');
+      try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
       setDone(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (e) {
@@ -185,7 +228,7 @@ export default function EvaluationWizard() {
           <Section title="مشخصات فردی">
             <Grid>
               <Field label="نام و نام خانوادگی" required>
-                <input className={inp} value={form.fullName} onChange={(e) => set('fullName', e.target.value)} />
+                <input data-testid="eval-fullname" className={inp} value={form.fullName} onChange={(e) => set('fullName', e.target.value)} />
               </Field>
               <Field label="جنسیت">
                 <select className={inp} value={form.gender} onChange={(e) => set('gender', e.target.value)}>
@@ -239,12 +282,51 @@ export default function EvaluationWizard() {
               <Field label="ایمیل" required>
                 <input type="email" className={inp} value={form.email} onChange={(e) => set('email', e.target.value)} />
               </Field>
-              <Field label="استان محل اقامت">
-                <select className={inp} value={form.province} onChange={(e) => set('province', e.target.value)}>
+              <Field label="کشور محل اقامت" required>
+                <select
+                  data-testid="eval-country"
+                  className={inp}
+                  value={form.country}
+                  onChange={(e) => {
+                    const c = e.target.value as Country;
+                    // reset province whenever country changes so we never
+                    // submit a Tehran value for someone living in Istanbul.
+                    setForm((f) => ({ ...f, country: c, province: '' }));
+                  }}
+                >
                   <option value="">انتخاب کنید</option>
-                  {provinces.map((p) => <option key={p} value={p}>{p}</option>)}
+                  <option value="IR">ایران</option>
+                  <option value="TR">ترکیه</option>
+                  <option value="OTHER">سایر</option>
                 </select>
               </Field>
+              {form.country === 'IR' && (
+                <Field label="استان محل اقامت">
+                  <select data-testid="eval-province-ir" className={inp} value={form.province} onChange={(e) => set('province', e.target.value)}>
+                    <option value="">انتخاب کنید</option>
+                    {IRANIAN_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </Field>
+              )}
+              {form.country === 'TR' && (
+                <Field label="استان محل اقامت (İl)">
+                  <select data-testid="eval-province-tr" className={inp} value={form.province} onChange={(e) => set('province', e.target.value)}>
+                    <option value="">انتخاب کنید</option>
+                    {TURKISH_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </Field>
+              )}
+              {form.country === 'OTHER' && (
+                <Field label="شهر و کشور محل اقامت">
+                  <input
+                    data-testid="eval-province-other"
+                    className={inp}
+                    value={form.province}
+                    onChange={(e) => set('province', e.target.value)}
+                    placeholder="مثال: Berlin, Germany"
+                  />
+                </Field>
+              )}
             </Grid>
           </Section>
         </div>
@@ -410,6 +492,21 @@ export default function EvaluationWizard() {
       )}
 
       {error && <p className="text-red-700 bg-red-50 p-3 rounded-lg mt-6 text-sm">{error}</p>}
+
+      {/* Honeypot — hidden from humans (sr-only + tabIndex=-1 + autoComplete off).
+          A non-empty value at submit time means the request is a bot; we fake
+          success in the submit handler and never POST. */}
+      <label className="sr-only" aria-hidden="true">
+        دسته‌بندی نیست
+        <input
+          ref={hpRef}
+          type="text"
+          name="hp"
+          tabIndex={-1}
+          autoComplete="off"
+          defaultValue=""
+        />
+      </label>
 
       {/* Navigation */}
       <div className="flex justify-between items-center mt-10">
