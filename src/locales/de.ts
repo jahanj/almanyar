@@ -22,6 +22,8 @@ const de: FaDict = {
     adminPanel: 'Admin-Panel',
     dashboard: 'Benutzerbereich',
     evaluation: 'Kostenlose Bewertung',
+    more: 'Mehr',
+    howItWorks: 'So arbeiten wir',
   },
   hero: {
     title: 'Studienmigration nach Deutschland über die Türkei',
@@ -48,6 +50,8 @@ const de: FaDict = {
       { icon: '📄', title: 'Dokumentenvorbereitung', text: 'Hilfe bei Vorbereitung und Übersetzung aller notwendigen Unterlagen.' },
       { icon: '💼', title: 'Nebenjob', text: 'Hilfe bei der Suche nach einem Nebenjob und Beratung zu Arbeitsregeln.' },
     ],
+    faqTitle: '',
+    faq: [],
   },
   process: {
     title: 'Unser Ablauf',

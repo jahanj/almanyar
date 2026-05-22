@@ -22,6 +22,8 @@ const tr: FaDict = {
     adminPanel: 'Yönetici Paneli',
     dashboard: 'Kullanıcı Paneli',
     evaluation: 'Ücretsiz Değerlendirme',
+    more: 'Daha fazla',
+    howItWorks: 'Nasıl çalışıyoruz',
   },
   hero: {
     title: 'Türkiye Üzerinden Almanya\'ya Eğitim Göçü',
@@ -48,6 +50,8 @@ const tr: FaDict = {
       { icon: '📄', title: 'Belge Hazırlama', text: 'Kayıt ve ikamet için gerekli tüm belgeleri hazırlamada yardım.' },
       { icon: '💼', title: 'Yarı Zamanlı İş', text: 'Yarı zamanlı iş bulma ve öğrenci çalışma kuralları rehberliği.' },
     ],
+    faqTitle: '',
+    faq: [],
   },
   process: {
     title: 'Çalışma Sürecimiz',

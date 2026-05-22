@@ -33,10 +33,10 @@ export const PUBLIC_ROUTES: PublicRoute[] = [
   { path: '/turkey-residence',           priority: 0.8, changeFrequency: 'monthly', source: 'src/app/[locale]/turkey-residence/page.tsx' },
   { path: '/turkey-costs',               priority: 0.8, changeFrequency: 'monthly', source: 'src/app/[locale]/turkey-costs/page.tsx' },
   { path: '/evaluation',                 priority: 0.7, changeFrequency: 'monthly', source: 'src/app/[locale]/evaluation/page.tsx' },
-  // Phase-2 additions wired in their respective commits:
-  // { path: '/how-it-works',            priority: 0.7, changeFrequency: 'yearly',  source: 'src/app/[locale]/how-it-works/page.tsx' },
-  // { path: '/disclaimer',              priority: 0.3, changeFrequency: 'yearly',  source: 'src/app/[locale]/disclaimer/page.tsx' },
-  // { path: '/privacy',                 priority: 0.3, changeFrequency: 'yearly',  source: 'src/app/[locale]/privacy/page.tsx' },
+  { path: '/how-it-works',               priority: 0.8, changeFrequency: 'yearly',  source: 'src/lib/positioning-content.ts' },
+  // Phase-2 LEGAL additions wired in their respective commits:
+  // { path: '/disclaimer',              priority: 0.3, changeFrequency: 'yearly',  source: 'src/lib/legal-content.ts' },
+  // { path: '/privacy',                 priority: 0.3, changeFrequency: 'yearly',  source: 'src/lib/legal-content.ts' },
 ];
 
 /** Final-fallback "last updated" date when neither explicit `updatedAt`

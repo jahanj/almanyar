@@ -21,6 +21,7 @@ const fa = {
     dashboard: 'پنل کاربری',
     evaluation: 'فرم ارزیابی رایگان',
     more: 'بیشتر',
+    howItWorks: 'نحوه کار ما',
   },
   hero: {
     title: 'مهاجرت تحصیلی به آلمان از ترکیه',
