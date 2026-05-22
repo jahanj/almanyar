@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Header from './Header';
 import CinematicJourneyHero from './journey/CinematicJourneyHero';
 import TrustBar from './TrustBar';
 import Services from './Services';
@@ -11,7 +10,6 @@ import TurkeyResidence from './TurkeyResidence';
 import Testimonials from './Testimonials';
 import ContactForm from './ContactForm';
 import CtaBanner from './CtaBanner';
-import Footer from './Footer';
 import ReviewModal from './ReviewModal';
 import type { Dictionary, Locale } from '@/lib/i18n';
 
@@ -40,9 +38,9 @@ export default function HomeClient({
   const [open, setOpen] = useState(false);
   const [refreshSignal, setRefreshSignal] = useState(0);
 
+  // Header and Footer are rendered by `[locale]/layout.tsx` — see BUG-05.
   return (
     <>
-      <Header dict={dict} locale={locale} />
       <main>
         <CinematicJourneyHero
           dict={dict}
@@ -60,7 +58,6 @@ export default function HomeClient({
         <CtaBanner dict={dict} locale={locale} />
         <ContactForm dict={dict} />
       </main>
-      <Footer dict={dict} locale={locale} />
       <ReviewModal
         open={open}
         onClose={() => setOpen(false)}

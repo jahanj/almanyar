@@ -2,9 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getDictionary, locales, type Locale } from '@/lib/i18n';
-import Header from '@/components/Header';
 import FaqAccordion from '@/components/FaqAccordion';
-import Footer from '@/components/Footer';
 import PageHero, { pageCtaPrimary } from '@/components/PageHero';
 import { localePath } from '@/lib/i18n';
 import JsonLd from '@/components/JsonLd';
@@ -27,7 +25,6 @@ export default async function GuidePage({ params }: { params: { locale: Locale }
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Header dict={dict} locale={params.locale} />
       <JsonLd
         data={[
           articleLd({ locale: params.locale, path: '/guide', headline: PAGE_SEO.guide.title, description: PAGE_SEO.guide.description }),
@@ -271,7 +268,6 @@ export default async function GuidePage({ params }: { params: { locale: Locale }
         </section>
       </main>
 
-      <Footer dict={dict} locale={params.locale} />
     </div>
   );
 }

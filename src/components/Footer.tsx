@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Dictionary, Locale } from '@/lib/i18n';
 import { defaultLocale, localePath } from '@/lib/i18n';
+import { PRIMARY_NAV } from '@/config/navigation';
 import GermanyTopics from './GermanyTopics';
 
 export default function Footer({ dict, locale = defaultLocale }: { dict: Dictionary; locale?: Locale }) {
@@ -17,15 +18,14 @@ export default function Footer({ dict, locale = defaultLocale }: { dict: Diction
               <p className="mt-2 max-w-md text-sm leading-relaxed text-slate-400">{dict.meta.description}</p>
             </div>
             <nav className="flex flex-wrap justify-center gap-6 text-sm font-medium" aria-label="Footer">
-              <Link href={localePath(locale, '#services')} className="transition hover:text-white">
-                {dict.nav.services}
-              </Link>
-              <Link href={localePath(locale, '#process')} className="transition hover:text-white">
-                {dict.nav.process}
-              </Link>
-              <Link href={localePath(locale, '#contact')} className="transition hover:text-white">
-                {dict.nav.contact}
-              </Link>
+              {PRIMARY_NAV.map((item) => {
+                const href = item.hash ? localePath(locale, item.hash) : localePath(locale, item.path);
+                return (
+                  <Link key={item.dictKey} href={href} className="transition hover:text-white">
+                    {dict.nav[item.dictKey]}
+                  </Link>
+                );
+              })}
               <Link href="/login" className="transition hover:text-white">
                 {dict.nav.login}
               </Link>

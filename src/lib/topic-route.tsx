@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getDictionary, localePath, type Locale } from '@/lib/i18n';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { localePath, type Locale } from '@/lib/i18n';
 import PageHero, { pageCtaPrimary, pageCtaSecondary } from '@/components/PageHero';
 import JsonLd from '@/components/JsonLd';
 import FaqAccordion from '@/components/FaqAccordion';
@@ -82,7 +80,6 @@ export function topicRoute(segment: string) {
     }
 
     const locale = params.locale;
-    const dict = await getDictionary(locale);
     const style = GROUP_STYLE[topic.group];
     const segLabel = SEGMENT_LABEL[segment] ?? style.label;
     const content: TopicContent | undefined = TOPIC_CONTENT[topic.href];
@@ -112,7 +109,6 @@ export function topicRoute(segment: string) {
     return (
       <div className="min-h-screen bg-slate-50">
         <JsonLd data={jsonLd} />
-        <Header dict={dict} locale={locale} />
 
         <PageHero
           locale={locale}
@@ -320,7 +316,6 @@ export function topicRoute(segment: string) {
           )}
         </main>
 
-        <Footer dict={dict} locale={locale} />
       </div>
     );
   }
@@ -329,8 +324,7 @@ export function topicRoute(segment: string) {
 }
 
 /** Group-index landing page used when /fa/<segment> has no specific topic. */
-async function groupIndexPage(segment: string, locale: Locale) {
-  const dict = await getDictionary(locale);
+function groupIndexPage(segment: string, locale: Locale) {
   const segLabel = SEGMENT_LABEL[segment] ?? segment;
   const topicsInGroup = TOPICS.filter((t) => t.href.split('/')[1] === segment);
   const style = topicsInGroup[0] ? GROUP_STYLE[topicsInGroup[0].group] : GROUP_STYLE.visa;
@@ -343,7 +337,6 @@ async function groupIndexPage(segment: string, locale: Locale) {
   return (
     <div className="min-h-screen bg-slate-50">
       <JsonLd data={[jsonLd]} />
-      <Header dict={dict} locale={locale} />
 
       <PageHero
         locale={locale}
@@ -379,7 +372,6 @@ async function groupIndexPage(segment: string, locale: Locale) {
         </div>
       </main>
 
-      <Footer dict={dict} locale={locale} />
     </div>
   );
 }

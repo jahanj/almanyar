@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getDictionary, locales, type Locale } from '@/lib/i18n';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import PageHero from '@/components/PageHero';
 import { localePath } from '@/lib/i18n';
 import FaqAccordion from '@/components/FaqAccordion';
@@ -62,7 +60,6 @@ export default async function ExamsPage({ params }: { params: { locale: Locale }
           ]),
         ]}
       />
-      <Header dict={dict} locale={params.locale} />
 
       <PageHero
         locale={params.locale}
@@ -165,7 +162,6 @@ export default async function ExamsPage({ params }: { params: { locale: Locale }
         </section>
       </main>
 
-      <Footer dict={dict} locale={params.locale} />
     </div>
   );
 }

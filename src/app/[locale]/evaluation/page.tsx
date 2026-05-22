@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getDictionary, locales, type Locale } from '@/lib/i18n';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import PageHero from '@/components/PageHero';
 import { localePath } from '@/lib/i18n';
 import EvaluationWizard from '@/components/EvaluationWizard';
@@ -27,7 +25,6 @@ export default async function EvaluationPage({ params }: { params: { locale: Loc
           { name: 'فرم ارزیابی رایگان', url: localizedUrl(params.locale, '/evaluation') },
         ])}
       />
-      <Header dict={dict} locale={params.locale} />
 
       <PageHero
         locale={params.locale}
@@ -44,7 +41,6 @@ export default async function EvaluationPage({ params }: { params: { locale: Loc
         <EvaluationWizard />
       </main>
 
-      <Footer dict={dict} locale={params.locale} />
     </div>
   );
 }

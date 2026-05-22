@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getDictionary, localePath, type Locale } from '@/lib/i18n';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import FaqAccordion, { type FaqItem } from '@/components/FaqAccordion';
 import JsonLd from '@/components/JsonLd';
 import { absoluteUrl, breadcrumbLd, faqLd, localizedUrl, pageMetadata, SITE } from '@/lib/seo';
@@ -255,7 +253,6 @@ export default async function GermanyVisaFromTurkeyPage({
           ]),
         ]}
       />
-      <Header dict={dict} locale={locale} />
 
       <section className="flag-bg text-white pt-32 pb-20 md:pt-40 md:pb-24">
         <div className="container mx-auto px-6">
@@ -540,7 +537,6 @@ export default async function GermanyVisaFromTurkeyPage({
         </div>
       </main>
 
-      <Footer dict={dict} locale={locale} />
     </div>
   );
 }

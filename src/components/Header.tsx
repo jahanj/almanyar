@@ -5,18 +5,18 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
 import type { Dictionary, Locale } from '@/lib/i18n';
+import { localePath } from '@/lib/i18n';
+import { PRIMARY_NAV } from '@/config/navigation';
 
 export default function Header({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { data: session } = useSession();
 
-  const primaryLinks = [
-    { href: `/${locale}#services`, label: dict.nav.services },
-    { href: `/${locale}#process`, label: dict.nav.process },
-    { href: `/${locale}#contact`, label: dict.nav.contact },
-    { href: `/${locale}/guide`, label: dict.nav.guide },
-  ];
+  const primaryLinks = PRIMARY_NAV.map((item) => ({
+    href: item.hash ? `/${locale}${item.hash}` : localePath(locale, item.path),
+    label: dict.nav[item.dictKey],
+  }));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
