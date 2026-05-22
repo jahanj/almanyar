@@ -55,6 +55,10 @@ export type TopicContent = {
   faqs?: TopicFaq[];
   /** Optional override for the closing call-to-action. */
   cta?: { title: string; desc: string };
+  /** ISO date (YYYY-MM-DD) the author last revised this topic. Optional;
+   *  if absent, falls back to the git-lastmod of the source file and
+   *  finally to PHASE_1_SEO_FILL_DATE. See src/lib/dates.ts. */
+  updatedAt?: string;
 };
 
 export type TopicContentMap = Record<string, TopicContent>;
