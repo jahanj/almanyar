@@ -4,7 +4,14 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import HomeClient from '@/components/HomeClient';
 import JsonLd from '@/components/JsonLd';
-import { faqLd, pageMetadata, serviceLd } from '@/lib/seo';
+import {
+  faqLd,
+  pageMetadata,
+  turkishAdmissionServiceLd,
+  settlementServiceLd,
+  germanyConsultingServiceLd,
+  personWithRatingLd,
+} from '@/lib/seo';
 import { PAGE_SEO } from '@/lib/seo-content';
 import { loadSiteStats } from '@/lib/site-stats';
 
@@ -59,7 +66,19 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
 
   return (
     <>
-      <JsonLd data={[serviceLd(params.locale), faqLd(dict.services.faq)]} />
+      <JsonLd
+        data={[
+          // Person+rating overrides the layout's plain personLd because it
+          // adds aggregateRating (when reviews >= 5). Same @id, so Google
+          // merges them.
+          personWithRatingLd(stats),
+          // Three Services match the actual business model. See PHASE-2-PLAN §SEO-03.
+          turkishAdmissionServiceLd(params.locale),
+          settlementServiceLd(params.locale),
+          germanyConsultingServiceLd(params.locale),
+          faqLd(dict.services.faq),
+        ]}
+      />
       <HomeClient
         dict={dict}
         locale={params.locale}

@@ -3,7 +3,7 @@ import { Vazirmatn } from 'next/font/google';
 import './globals.css';
 import NextAuthProvider from '@/components/SessionProvider';
 import JsonLd from '@/components/JsonLd';
-import { SITE, organizationLd, websiteLd } from '@/lib/seo';
+import { SITE, personLd, webSiteLd } from '@/lib/seo';
 
 // Self-hosted, swap-displayed Persian font: no render-blocking Google Fonts
 // request and no layout shift (better LCP/CLS / Core Web Vitals).
@@ -55,7 +55,7 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" className={vazirmatn.variable}>
       <body className="persian-font bg-slate-50 text-slate-800 antialiased">
-        <JsonLd data={[organizationLd(), websiteLd()]} />
+        <JsonLd data={[personLd(), webSiteLd()]} />
         <NextAuthProvider>{children}</NextAuthProvider>
       </body>
     </html>

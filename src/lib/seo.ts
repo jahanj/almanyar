@@ -20,7 +20,7 @@ export const SITE = {
   // Logos / default share image live in /public.
   logo: '/logo.png',
   ogImage: '/og.png',
-  // Public social profiles — used for Organization `sameAs`. Add real URLs as they go live.
+  // Public social profiles — used for Person `sameAs`. Add real URLs as they go live.
   social: [
     'https://instagram.com/almanyar',
     'https://t.me/almanyar',
@@ -177,24 +177,172 @@ export function rootPageMetadata(input: {
 
 /* ─────────────────────────  JSON-LD builders  ───────────────────────── */
 
+/** The Almanyar entity. A single human consultant, not a registered company.
+ *  All other JSON-LD references this Person via { @id: …/#person }. */
+export function personLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': `${SITE.url}/#person`,
+    name: SITE.name,
+    alternateName: SITE.brandLatin,
+    url: SITE.url,
+    image: absoluteUrl(SITE.logo),
+    description: 'مشاور مهاجرت تحصیلی به آلمان از ترکیه',
+    jobTitle: 'مشاور مهاجرت تحصیلی',
+    knowsLanguage: ['fa', 'tr', 'de', 'en'],
+    knowsAbout: [
+      'German student visa',
+      'Turkey student residence permit',
+      'DAAD',
+      'Studienkolleg',
+      'TestDaF',
+      'Goethe Zertifikat',
+      'telc',
+      'Blocked Account',
+      'Aufenthaltstitel',
+      'e-ikamet',
+    ],
+    // Email intentionally omitted (PHASE-2-PLAN §5.A ack: no scraper bait).
+    // Contact surface is the homepage anchor.
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      url: `${SITE.url}/fa#contact`,
+      availableLanguage: ['Persian', 'Turkish', 'German', 'English'],
+    },
+    sameAs: SITE.social,
+  };
+}
+
+/**
+ * Person + AggregateRating. Only emitted when there are enough reviews
+ * to substantiate the rating (BUG-03 threshold: reviewsCount >= 5).
+ */
+export function personWithRatingLd(stats: { reviews: number | null; rating: number | null }) {
+  const base = personLd();
+  if (stats.reviews != null && stats.reviews >= 5 && stats.rating != null) {
+    return {
+      ...base,
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: stats.rating.toFixed(1),
+        reviewCount: stats.reviews,
+        bestRating: '5',
+        worstRating: '1',
+      },
+    };
+  }
+  return base;
+}
+
+export function webSiteLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE.url}/#website`,
+    url: SITE.url,
+    name: SITE.name,
+    inLanguage: ['fa'],
+    publisher: { '@id': `${SITE.url}/#person` },
+    // Placeholder SearchAction — search route lands in Phase 6.
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${SITE.url}/fa/search?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+}
+
+/* ─── Three Services, one per business surface (PHASE-2-PLAN §SEO-03). ── */
+
+/** Turkish university admission — FREE for the client. */
+export function turkishAdmissionServiceLd(locale: Locale) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${SITE.url}/#service-tr-admission`,
+    name: 'اخذ پذیرش از دانشگاه‌های ترکیه',
+    serviceType: 'Turkish University Admission Assistance',
+    description: 'اخذ پذیرش از دانشگاه‌های ترکیه — رایگان',
+    areaServed: { '@type': 'Country', name: 'Turkey' },
+    provider: { '@id': `${SITE.url}/#person` },
+    url: localizedUrl(locale, '/how-it-works'),
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'TRY',
+      availability: 'https://schema.org/InStock',
+    },
+  };
+}
+
+/** Settlement services in Turkey (housing, residence permit, etc.). Paid,
+ *  but the price is set offline per private contract — never disclosed
+ *  in JSON-LD (PHASE-2-PLAN constraint). */
+export function settlementServiceLd(locale: Locale) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${SITE.url}/#service-settlement`,
+    name: 'خدمات استقرار دانشجویی در ترکیه',
+    serviceType: 'Student Settlement Services in Turkey',
+    description:
+      'یافتن مسکن، افتتاح حساب بانکی ترکیه، اخذ شماره مالیاتی (Vergi Numarası)، ثبت‌نام دانشگاه، بیمه درمانی، اخذ اقامت تحصیلی (e-ikamet) و راهنمایی روزانه پس از ورود.',
+    areaServed: { '@type': 'Country', name: 'Turkey' },
+    provider: { '@id': `${SITE.url}/#person` },
+    url: localizedUrl(locale, '/how-it-works'),
+    termsOfService: localizedUrl(locale, '/how-it-works'),
+    // No `offers.price` field — price is private + contract-bound.
+  };
+}
+
+/** Germany-side guidance. Honest scope: we accompany, we don't guarantee. */
+export function germanyConsultingServiceLd(locale: Locale) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${SITE.url}/#service-germany`,
+    name: 'همراهی در مسیر مهاجرت تحصیلی به آلمان',
+    serviceType: 'Germany Migration Consulting',
+    description:
+      'همراهی در مراحل ویزای آلمان، آماده‌سازی پرونده، پذیرش دانشگاه‌های آلمان و آزمون‌های زبان. تصمیم نهایی با سفارت آلمان، دانشگاه‌ها و مراکز آزمون است.',
+    areaServed: { '@type': 'Country', name: 'Germany' },
+    provider: { '@id': `${SITE.url}/#person` },
+    url: localizedUrl(locale, '/how-it-works'),
+    termsOfService: localizedUrl(locale, '/how-it-works'),
+    // No `offers.price` — same offline-contract model.
+  };
+}
+
+/* ─────────────── deprecated, kept for the SEO-03 transition ──────────────
+ * Phase-2 commit "feat(seo): swap Organization → Person" replaces every
+ * caller of the three legacy builders below. They stay exported for one
+ * commit so reverting the swap doesn't break a caller that still imports
+ * them. Delete them in the follow-up cleanup commit once the live site
+ * has been verified on the new shape. */
+
+/** @deprecated Use {@link personLd}. */
 export function organizationLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    '@id': `${SITE.url}/#organization`,
+    '@id': `${SITE.url}/#person`,
     name: SITE.name,
     alternateName: SITE.brandLatin,
     url: SITE.url,
     logo: absoluteUrl(SITE.logo),
     image: absoluteUrl(SITE.ogImage),
-    email: SITE.email,
-    telephone: SITE.phone,
-    description: 'خدمات تخصصی مهاجرت تحصیلی به آلمان از مسیر ترکیه؛ اقامت تحصیلی، انتخاب دانشگاه و اخذ ویزای دانشجویی.',
+    description: 'خدمات تخصصی مهاجرت تحصیلی به آلمان از مسیر ترکیه.',
     areaServed: ['IR', 'TR', 'DE'],
     sameAs: SITE.social,
   };
 }
 
+/** @deprecated Use {@link webSiteLd}. */
 export function websiteLd() {
   return {
     '@context': 'https://schema.org',
@@ -202,48 +350,15 @@ export function websiteLd() {
     '@id': `${SITE.url}/#website`,
     url: SITE.url,
     name: SITE.name,
-    inLanguage: ['fa', 'tr', 'de'],
-    publisher: { '@id': `${SITE.url}/#organization` },
+    inLanguage: ['fa'],
+    publisher: { '@id': `${SITE.url}/#person` },
   };
 }
 
-/** Professional service offered — strengthens entity understanding for AI/Google. */
+/** @deprecated Use the three focused builders (turkishAdmission /
+ *  settlement / germanyConsulting). Kept until SEO-03 verification. */
 export function serviceLd(locale: Locale) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'ProfessionalService',
-    name: SITE.name,
-    url: localizedUrl(locale),
-    image: absoluteUrl(SITE.ogImage),
-    priceRange: '$$',
-    areaServed: ['IR', 'TR', 'DE'],
-    serviceType: 'مشاوره مهاجرت تحصیلی به آلمان و ثبت‌نام آزمون‌های زبان آلمانی',
-    description:
-      'خدمات آلمانیار شامل انتخاب دانشگاه، آماده‌سازی مدارک، ثبت‌نام آزمون گوته، telc، TestDaF، TestAS و ÖSD، درخواست ویزا، حساب مسدودشده، بیمه و همراهی پس از ورود به آلمان است.',
-    provider: { '@id': `${SITE.url}/#organization` },
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: 'خدمات مهاجرت تحصیلی آلمانیار',
-      itemListElement: [
-        'انتخاب دانشگاه و رشته',
-        'تهیه و ترجمه مدارک',
-        'ثبت‌نام آزمون گوته',
-        'ثبت‌نام آزمون telc',
-        'ثبت‌نام TestDaF',
-        'ثبت‌نام TestAS',
-        'درخواست ویزای تحصیلی آلمان',
-        'افتتاح حساب مسدود شده',
-        'بیمه درمانی دانشجویی',
-        'یافتن خانه در آلمان',
-      ].map((name) => ({
-        '@type': 'Offer',
-        itemOffered: {
-          '@type': 'Service',
-          name,
-        },
-      })),
-    },
-  };
+  return germanyConsultingServiceLd(locale);
 }
 
 export function breadcrumbLd(items: { name: string; url: string }[]) {
@@ -292,7 +407,7 @@ export function articleLd(input: {
     ...(input.dateModified ? { dateModified: input.dateModified } : {}),
     image: absoluteUrl(input.image ?? SITE.ogImage),
     mainEntityOfPage: localizedUrl(input.locale, input.path),
-    author: { '@id': `${SITE.url}/#organization` },
-    publisher: { '@id': `${SITE.url}/#organization` },
+    author: { '@id': `${SITE.url}/#person` },
+    publisher: { '@id': `${SITE.url}/#person` },
   };
 }

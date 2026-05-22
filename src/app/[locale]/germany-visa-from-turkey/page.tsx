@@ -213,8 +213,8 @@ export default async function GermanyVisaFromTurkeyPage({
     inLanguage: 'fa',
     image: absoluteUrl(SITE.ogImage),
     mainEntityOfPage: canonical,
-    author: { '@id': `${SITE.url}/#organization` },
-    publisher: { '@id': `${SITE.url}/#organization` },
+    author: { '@id': `${SITE.url}/#person` },
+    publisher: { '@id': `${SITE.url}/#person` },
   };
 
   const serviceSchema = {
@@ -224,7 +224,7 @@ export default async function GermanyVisaFromTurkeyPage({
     serviceType: 'ویزای آلمان از طریق ترکیه برای ایرانیان',
     description: seo.description,
     areaServed: ['IR', 'TR', 'DE'],
-    provider: { '@id': `${SITE.url}/#organization` },
+    provider: { '@id': `${SITE.url}/#person` },
     url: canonical,
     hasOfferCatalog: {
       '@type': 'OfferCatalog',

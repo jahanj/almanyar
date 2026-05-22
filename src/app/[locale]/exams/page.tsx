@@ -37,7 +37,7 @@ export default async function ExamsPage({ params }: { params: { locale: Locale }
     serviceType: 'ثبت‌نام آزمون گوته، telc، TestDaF، TestAS، DSH و ÖSD',
     description: PAGE_SEO.exams.description,
     areaServed: ['TR', 'DE', 'IR'],
-    provider: { '@id': `${SITE.url}/#organization` },
+    provider: { '@id': `${SITE.url}/#person` },
     url: localizedUrl(params.locale, '/exams'),
     image: absoluteUrl(SITE.ogImage),
     offers: examGroups.map((g) => ({
