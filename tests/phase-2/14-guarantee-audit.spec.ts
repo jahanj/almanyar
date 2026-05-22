@@ -52,6 +52,11 @@ const ALLOW_LIST: Array<{ file: string; substring: string; reason: string }> = [
     substring: 'به‌تنهایی تضمین‌کننده پذیرش پرونده نیست',
     reason: 'Negation — Turkish residence alone is NOT a guarantor.',
   },
+  {
+    file: 'src/app/[locale]/disclaimer/page.tsx',
+    substring: 'آنچه تضمین نمی‌کنیم',
+    reason: 'Disclaimer meta description — "what we DO NOT guarantee".',
+  },
 ];
 
 function grepOccurrences(pattern: string): Array<{ file: string; line: number; text: string }> {

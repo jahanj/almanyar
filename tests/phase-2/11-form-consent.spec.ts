@@ -18,17 +18,18 @@ const STORAGE_KEY = 'almanyar_eval_v1';
 
 test.describe('LEGAL-04 — form consent', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear any prior eval draft so we start with a clean state.
-    await page.goto('/fa/evaluation', { waitUntil: 'domcontentloaded' });
+    // Clean slate; use networkidle so React hydration completes before we touch inputs.
+    await page.goto('/fa/evaluation', { waitUntil: 'networkidle' });
     await page.evaluate((k) => window.localStorage.removeItem(k as string), STORAGE_KEY);
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.reload({ waitUntil: 'networkidle' });
   });
 
   test('evaluation form: required consent checkbox + optional marketing default-off', async ({ page }) => {
-    // Fill the step-0 required fields; selectOption may race React hydration
-    // (Phase-1 BUG-06 lesson) so we retry the country pick until the form
-    // accepts it.
-    await page.getByTestId('eval-fullname').fill('Test User');
+    // Wait for React handlers on the first input before filling.
+    const fullname = page.getByTestId('eval-fullname');
+    await fullname.waitFor({ state: 'visible' });
+    await fullname.click();
+    await fullname.fill('Test User');
     await page.locator('label:has-text("تلفن همراه") + input').fill('+90 555 111 22 33');
     await page.locator('label:has-text("ایمیل") + input').fill('test@example.com');
 

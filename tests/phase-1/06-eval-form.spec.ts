@@ -42,12 +42,21 @@ test.describe('BUG-06 — eval form Country picker + persistence + honeypot', ()
   });
 
   test('localStorage persists the form across reloads', async ({ page }) => {
-    await page.goto('/fa/evaluation', { waitUntil: 'domcontentloaded' });
-    await page.getByTestId('eval-fullname').fill('Test Persianov');
-    await page.waitForTimeout(400); // past the 250ms debounce
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    // Clean slate so prior tests in this file (which mutate country) don't bleed in.
+    await page.goto('/fa/evaluation', { waitUntil: 'networkidle' });
+    await page.evaluate(() => window.localStorage.removeItem('almanyar_eval_v1'));
+    await page.reload({ waitUntil: 'networkidle' });
+
+    // Wait for React to hydrate the input before filling.
+    const input = page.getByTestId('eval-fullname');
+    await input.waitFor({ state: 'visible' });
+    await input.click(); // focus = proof React handlers are attached
+    await input.fill('Test Persianov');
+    // Past the 250ms debounce.
+    await page.waitForTimeout(500);
+
+    await page.reload({ waitUntil: 'networkidle' });
     await expect(page.getByTestId('eval-fullname')).toHaveValue('Test Persianov');
-    // Clean up so this draft doesn't leak into other tests.
     await page.evaluate(() => window.localStorage.removeItem('almanyar_eval_v1'));
   });
 
