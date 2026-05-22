@@ -1,40 +1,57 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { locales, defaultLocale } from './lib/i18n';
+import { defaultLocale } from './lib/i18n';
 
 const PUBLIC_FILE = /\.(.*)$/;
+
+// Routes that live outside the [locale] segment and must not be locale-redirected.
+const NON_LOCALIZED_PREFIXES = [
+  '/api',
+  '/_next',
+  '/admin',
+  '/dashboard',
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/verify-email',
+  '/germany-visa-from-turkey',
+  // Root-level SEO landing segments (دانستنی‌های کاربردی آلمان).
+  '/germany-visa',
+  '/germany-embassy',
+  '/study-germany',
+  '/work-germany',
+  '/jobs-germany',
+  '/life-germany',
+  '/services',
+  '/faq',
+  '/ausbildung',
+];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  if (pathname === `/${defaultLocale}/germany-visa-from-turkey`) {
+    request.nextUrl.pathname = '/germany-visa-from-turkey';
+    return NextResponse.redirect(request.nextUrl, 308);
+  }
+
   if (
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/register') ||
+    NON_LOCALIZED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`)) ||
+    // Exam topic pages (/exams/dsh …) are root-level, but bare /exams redirects to /fa/exams.
+    pathname.startsWith('/exams/') ||
     PUBLIC_FILE.test(pathname)
   ) {
     return NextResponse.next();
   }
 
-  const pathnameHasLocale = locales.some(
-    (l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`
-  );
+  // Persian-only site: anything already under /fa passes through; everything else
+  // is redirected to its /fa equivalent.
+  if (pathname === `/${defaultLocale}` || pathname.startsWith(`/${defaultLocale}/`)) {
+    return NextResponse.next();
+  }
 
-  if (pathnameHasLocale) return NextResponse.next();
-
-  const cookieLocale = request.cookies.get('locale')?.value;
-  const acceptLanguage = request.headers.get('accept-language') ?? '';
-  const detected = cookieLocale && locales.includes(cookieLocale as never)
-    ? cookieLocale
-    : acceptLanguage.toLowerCase().includes('tr')
-      ? 'tr'
-      : acceptLanguage.toLowerCase().includes('de')
-        ? 'de'
-        : defaultLocale;
-
-  request.nextUrl.pathname = `/${detected}${pathname === '/' ? '' : pathname}`;
+  request.nextUrl.pathname = `/${defaultLocale}${pathname === '/' ? '' : pathname}`;
   return NextResponse.redirect(request.nextUrl);
 }
 
