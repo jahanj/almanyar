@@ -46,10 +46,26 @@ export function localizedUrl(locale: Locale, path = ''): string {
   return absoluteUrl(`/${locale}${clean}`);
 }
 
-/** Builds the hreflang alternates map (all locales + x-default) for a page path. */
-function languageAlternates(path: string): Record<string, string> {
+/**
+ * Builds the hreflang alternates map for a page path.
+ *
+ * `extraLocales` lets an individual page declare additional language
+ * versions once translations exist (e.g. `['tr', 'en']`). Default emits
+ * only the populated `locales` array + `x-default`. We don't emit broken
+ * hreflang links for locales that don't yet have content (Google flags
+ * them as 404 in Search Console).
+ */
+function languageAlternates(path: string, extraLocales: readonly string[] = []): Record<string, string> {
   const map: Record<string, string> = {};
+  // Hardcoded `fa` for now (the only populated locale). When real
+  // translation locales land, add them to `locales` in lib/i18n.ts.
   for (const l of locales) map[HREFLANG[l]] = localizedUrl(l, path);
+  // Forward-compat: pages with translated versions append themselves here.
+  for (const code of extraLocales) {
+    // The URL still uses the locale segment — same path, different prefix.
+    // Cast: `code` is a known language tag string at the point a page calls this.
+    map[code] = `${SITE.url}/${code}${path === '/' ? '' : path}`;
+  }
   map['x-default'] = localizedUrl(defaultLocale, path);
   return map;
 }
@@ -66,6 +82,10 @@ type PageMetaInput = {
   image?: string;
   /** Set true on pages that must not be indexed. */
   noindex?: boolean;
+  /** Languages this page has been translated into (in addition to the
+   *  default Persian). Emits hreflang links only when content exists at
+   *  the corresponding URL. Default: []. */
+  translatedLocales?: readonly string[];
 };
 
 /**
@@ -76,7 +96,7 @@ type PageMetaInput = {
  * `<meta name="keywords">` signal in 2009 and the other major engines followed.
  */
 export function pageMetadata(input: PageMetaInput): Metadata {
-  const { locale, path = '', title, description, type = 'website', image, noindex } = input;
+  const { locale, path = '', title, description, type = 'website', image, noindex, translatedLocales } = input;
   const safeDescription = truncateDescription(description);
   const canonical = localizedUrl(locale, path);
   const ogImage = absoluteUrl(image ?? SITE.ogImage);
@@ -86,7 +106,7 @@ export function pageMetadata(input: PageMetaInput): Metadata {
     description: safeDescription,
     alternates: {
       canonical,
-      languages: languageAlternates(path),
+      languages: languageAlternates(path, translatedLocales),
     },
     robots: noindex
       ? { index: false, follow: false }
