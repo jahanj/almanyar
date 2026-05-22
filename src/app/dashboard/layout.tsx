@@ -20,7 +20,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <header className="flag-bg text-white shadow-lg">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold">🇩🇪 پنل کاربری</Link>
+          <Link href="/" className="flex items-center gap-2 font-bold">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="AlmanYar" className="h-8 w-auto" />
+            <span>پنل کاربری</span>
+          </Link>
           <div className="flex items-center gap-4 text-sm">
             <span className="opacity-90">{session.user.name}</span>
             {session.user.role === 'ADMIN' && (
