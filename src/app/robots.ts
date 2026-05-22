@@ -1,6 +1,14 @@
 import type { MetadataRoute } from 'next';
 import { SITE } from '@/lib/seo';
 
+// Opt out of static optimization. Next pre-renders robots.ts to
+// .next/server/app/robots.txt.body at BUILD time by default — which means
+// APP_ENV (which arrives via docker-compose `environment:` AT RUNTIME)
+// is undefined when the value is captured, baking in the staging
+// Disallow-everything fallback. force-dynamic moves the evaluation to
+// each request.
+export const dynamic = 'force-dynamic';
+
 /**
  * robots.txt — generated at /robots.txt.
  *
