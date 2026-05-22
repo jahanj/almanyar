@@ -1,147 +1,220 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
-import type { Dictionary } from '@/lib/i18n';
-import type { Locale } from '@/lib/i18n';
+import type { Dictionary, Locale } from '@/lib/i18n';
 
 export default function Header({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
   const { data: session } = useSession();
 
-  const switchLocale = (next: string) => {
-    document.cookie = `locale=${next}; path=/; max-age=${60 * 60 * 24 * 365}`;
-    const rest = pathname.replace(/^\/(fa|tr|de)/, '');
-    router.push(`/${next}${rest || ''}`);
-  };
-
-  const links = [
+  const primaryLinks = [
     { href: `/${locale}#services`, label: dict.nav.services },
     { href: `/${locale}#process`, label: dict.nav.process },
-    { href: `/${locale}#education`, label: dict.nav.education },
-    { href: `/${locale}/guide`, label: dict.nav.guide },
-    { href: `/${locale}/turkey-residence`, label: dict.nav.turkey },
-    { href: `/${locale}/turkey-costs`, label: dict.nav.turkeyCosts },
-    { href: `/${locale}#living-costs`, label: dict.nav.livingCosts },
-    { href: `/${locale}#ausbildung`, label: dict.nav.ausbildung },
-    { href: `/${locale}#testimonials`, label: dict.nav.testimonials },
     { href: `/${locale}#contact`, label: dict.nav.contact },
+    { href: `/${locale}/guide`, label: dict.nav.guide },
   ];
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [locale]);
+
   return (
-    <header className="flag-bg text-white shadow-2xl fixed w-full top-0 z-50">
-      <nav className="container mx-auto px-6 py-4">
-        <div className="flex justify-between items-center gap-4">
-          <Link href={`/${locale}`} className="text-2xl font-bold text-shadow whitespace-nowrap">
-            🇩🇪 {dict.meta.title}
+    <header
+      className={[
+        'fixed inset-x-0 top-0 z-50 transition-all duration-300',
+        scrolled
+          ? 'border-b border-slate-200/80 bg-white/90 shadow-soft backdrop-blur-md'
+          : 'border-b border-transparent bg-white/70 backdrop-blur-sm',
+      ].join(' ')}
+    >
+      <nav className="container mx-auto px-4 sm:px-6 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <Link href={`/${locale}`} className="flex shrink-0 items-center gap-3" aria-label={dict.meta.title}>
+            <Image
+              src="/logo.png"
+              alt={dict.meta.title}
+              width={300}
+              height={205}
+              priority
+              unoptimized
+              className="h-11 w-auto md:h-12"
+            />
           </Link>
 
-          <Link
-            href={`/${locale}/evaluation`}
-            className="hidden lg:inline-block bg-green-600 hover:bg-green-700 text-white font-bold px-5 py-2 rounded-lg text-sm whitespace-nowrap transition"
-          >
-            {dict.nav.evaluation}
-          </Link>
-
-          <div className="hidden md:flex items-center gap-6">
-            {links.map((l) => (
-              <a key={l.href} href={l.href} className="hover:text-yellow-300 transition font-medium">
-                {l.label}
+          <div className="hidden items-center gap-1 lg:flex">
+            {primaryLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+              >
+                {link.label}
               </a>
             ))}
+            <Link
+              href={`/${locale}/evaluation`}
+              className="ms-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+            >
+              {dict.nav.evaluation}
+            </Link>
           </div>
 
-          <div className="flex items-center gap-3">
-            <select
-              value={locale}
-              onChange={(e) => switchLocale(e.target.value)}
-              className="bg-white/20 border border-white/30 text-white rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
-            >
-              <option value="fa" className="text-gray-800">🇮🇷 فارسی</option>
-              <option value="tr" className="text-gray-800">🇹🇷 Türkçe</option>
-              <option value="de" className="text-gray-800">🇩🇪 Deutsch</option>
-            </select>
-
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             {session?.user ? (
-              <div className="hidden md:flex items-center gap-3">
-                <Link href="/dashboard" className="bg-white/20 px-3 py-1 rounded-lg font-medium text-sm hover:bg-white/30">
+              <div className="hidden items-center gap-2 md:flex">
+                <Link
+                  href="/dashboard"
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                >
                   {dict.nav.dashboard}
                 </Link>
                 {session.user.role === 'ADMIN' && (
-                  <Link href="/admin" className="bg-yellow-500 text-gray-900 px-3 py-1 rounded-lg font-medium text-sm">
+                  <Link
+                    href="/admin"
+                    className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                  >
                     {dict.nav.adminPanel}
                   </Link>
                 )}
                 <button
+                  type="button"
                   onClick={() => signOut({ callbackUrl: `/${locale}` })}
-                  className="text-sm hover:text-yellow-300"
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
                 >
                   {dict.nav.logout}
                 </button>
               </div>
             ) : (
-              <div className="hidden md:flex items-center gap-2 text-sm">
-                <Link href="/login" className="hover:text-yellow-300">{dict.nav.login}</Link>
-                <span>/</span>
-                <Link href="/register" className="hover:text-yellow-300">{dict.nav.register}</Link>
+              <div className="hidden items-center gap-2 text-sm md:flex">
+                <Link
+                  href="/login"
+                  className="rounded-lg px-3 py-2 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                >
+                  {dict.nav.login}
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white transition hover:bg-slate-800"
+                >
+                  {dict.nav.register}
+                </Link>
               </div>
             )}
 
             <button
-              onClick={() => setOpen(!open)}
-              className="md:hidden text-white"
-              aria-label="menu"
+              type="button"
+              onClick={() => setOpen((value) => !value)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 lg:hidden"
+              aria-label={open ? 'بستن منو' : 'باز کردن منو'}
+              aria-expanded={open}
+              aria-controls="mobile-navigation"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={open ? 'M6 6l12 12M6 18L18 6' : 'M4 6h16M4 12h16M4 18h16'}
+                />
               </svg>
             </button>
           </div>
         </div>
 
         {open && (
-          <div className="md:hidden mt-4 bg-gray-900/95 rounded-xl p-4 space-y-3">
-            <Link
-              href={`/${locale}/evaluation`}
-              onClick={() => setOpen(false)}
-              className="block bg-green-600 text-white text-center font-bold px-4 py-2 rounded-lg"
-            >
-              {dict.nav.evaluation}
-            </Link>
-            {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
+          <div
+            id="mobile-navigation"
+            className="mt-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-card lg:hidden"
+          >
+            <div className="grid gap-1">
+              <Link
+                href={`/${locale}/evaluation`}
                 onClick={() => setOpen(false)}
-                className="block text-white hover:text-yellow-300"
+                className="rounded-xl bg-brand-600 px-4 py-3 text-center text-sm font-semibold text-white"
               >
-                {l.label}
-              </a>
-            ))}
-            {session?.user ? (
-              <>
-                <Link href="/dashboard" onClick={() => setOpen(false)} className="block text-white">
-                  {dict.nav.dashboard}
-                </Link>
-                {session.user.role === 'ADMIN' && (
-                  <Link href="/admin" className="block text-yellow-300">
-                    {dict.nav.adminPanel}
-                  </Link>
+                {dict.nav.evaluation}
+              </Link>
+
+              {primaryLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-xl px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                >
+                  {link.label}
+                </a>
+              ))}
+
+              <div className="mt-2 border-t border-slate-100 pt-2">
+                {session?.user ? (
+                  <div className="grid gap-1">
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setOpen(false)}
+                      className="rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      {dict.nav.dashboard}
+                    </Link>
+                    {session.user.role === 'ADMIN' && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setOpen(false)}
+                        className="rounded-xl px-4 py-3 text-sm font-semibold text-brand-700 hover:bg-slate-50"
+                      >
+                        {dict.nav.adminPanel}
+                      </Link>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => signOut({ callbackUrl: `/${locale}` })}
+                      className="rounded-xl px-4 py-3 text-start text-sm font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      {dict.nav.logout}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      href="/login"
+                      onClick={() => setOpen(false)}
+                      className="rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700"
+                    >
+                      {dict.nav.login}
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setOpen(false)}
+                      className="rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white"
+                    >
+                      {dict.nav.register}
+                    </Link>
+                  </div>
                 )}
-                <button onClick={() => signOut({ callbackUrl: `/${locale}` })} className="text-white">
-                  {dict.nav.logout}
-                </button>
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="block text-white">{dict.nav.login}</Link>
-                <Link href="/register" className="block text-white">{dict.nav.register}</Link>
-              </>
-            )}
+              </div>
+            </div>
           </div>
         )}
       </nav>

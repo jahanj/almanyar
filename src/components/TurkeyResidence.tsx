@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Dictionary, Locale } from '@/lib/i18n';
+import SectionHeader from './SectionHeader';
 
 const steps = [
   { icon: '✈️', title: 'قبل از ورود', text: 'پذیرش دانشگاه، ویزا، آپوستیل و ترجمه مدارک' },
@@ -10,35 +11,39 @@ const steps = [
 
 export default function TurkeyResidence({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   return (
-    <section id="turkey-residence" className="section-padding bg-white">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <div className="text-4xl mb-2">🇹🇷</div>
-          <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-4">{dict.nav.turkey}</h2>
-          <p className="text-xl text-gray-600">مسیر اخذ اقامت دانشجویی (Öğrenci İkamet İzni) در ترکیه</p>
-          <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-red-700 mx-auto mt-4 rounded-full"></div>
-        </div>
+    <section id="turkey-residence" className="section-padding bg-slate-50">
+      <div className="container mx-auto px-4 sm:px-6">
+        <SectionHeader
+          eyebrow="🇹🇷"
+          title={dict.nav.turkey}
+          subtitle="مسیر اخذ اقامت دانشجویی (Öğrenci İkamet İzni) در ترکیه"
+        />
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-10">
-          {steps.map((s, i) => (
-            <div key={i} className="bg-gradient-to-br from-gray-50 to-red-50 rounded-2xl shadow p-6 text-center card-hover">
-              <div className="text-4xl mb-3 floating-animation">{s.icon}</div>
-              <h3 className="font-bold text-gray-800 mb-2">{s.title}</h3>
-              <p className="text-gray-600 text-sm leading-7">{s.text}</p>
+        <div className="mx-auto mb-10 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((s) => (
+            <div
+              key={s.title}
+              className="card-hover rounded-2xl border border-red-100 bg-white p-6 text-center shadow-soft"
+            >
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-2xl">
+                {s.icon}
+              </div>
+              <h3 className="mb-2 font-semibold text-slate-900">{s.title}</h3>
+              <p className="text-sm leading-relaxed text-slate-600">{s.text}</p>
             </div>
           ))}
         </div>
 
-        <div className="text-center flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href={`/${locale}/turkey-residence`}
-            className="inline-block bg-gradient-to-r from-red-600 to-red-700 hover:opacity-90 text-white font-bold py-4 px-10 rounded-xl transition transform hover:scale-105 shadow-lg"
+            className="inline-flex w-full items-center justify-center rounded-xl bg-red-600 px-8 py-3.5 text-sm font-semibold text-white shadow-soft transition hover:bg-red-700 sm:w-auto"
           >
             🇹🇷 راهنمای کامل اقامت تحصیلی ترکیه
           </Link>
           <Link
             href={`/${locale}/turkey-costs`}
-            className="inline-block bg-white border-2 border-red-600 text-red-700 hover:bg-red-50 font-bold py-4 px-10 rounded-xl transition transform hover:scale-105 shadow-lg"
+            className="inline-flex w-full items-center justify-center rounded-xl border border-red-200 bg-white px-8 py-3.5 text-sm font-semibold text-red-700 shadow-soft transition hover:bg-red-50 sm:w-auto"
           >
             💰 هزینه زندگی در ترکیه
           </Link>

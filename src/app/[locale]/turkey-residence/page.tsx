@@ -4,44 +4,54 @@ import { notFound } from 'next/navigation';
 import { getDictionary, locales, type Locale } from '@/lib/i18n';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PageHero, { pageCtaPrimary } from '@/components/PageHero';
+import { localePath } from '@/lib/i18n';
 import FaqAccordion from '@/components/FaqAccordion';
+import JsonLd from '@/components/JsonLd';
+import { pageMetadata, faqLd, breadcrumbLd, localizedUrl } from '@/lib/seo';
+import { PAGE_SEO } from '@/lib/seo-content';
 import {
   trQuickFacts, trPhases, trDocuments, trInsurance,
   trSpecialCases, trDigitalSystems, trFaq,
 } from '@/lib/turkey-data';
 
-export const metadata: Metadata = {
-  title: 'راهنمای جامع اقامت تحصیلی ترکیه | مهاجرت آلمان',
-  description: 'راهنمای کامل اقامت تحصیلی ترکیه (Öğrenci İkamet İzni): مراحل، مدارک، سامانه e-ikamet، بیمه، ثبت آدرس، تمدید و سوالات متداول.',
-};
+export function generateMetadata(): Metadata {
+  const s = PAGE_SEO.turkeyResidence;
+  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description, keywords: s.keywords, type: 'article' });
+}
 
 export default async function TurkeyResidencePage({ params }: { params: { locale: Locale } }) {
   if (!locales.includes(params.locale)) notFound();
   const dict = await getDictionary(params.locale);
 
   return (
-    <div className="bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
+      <JsonLd
+        data={[
+          faqLd(trFaq),
+          breadcrumbLd([
+            { name: 'خانه', url: localizedUrl(params.locale) },
+            { name: 'اقامت تحصیلی ترکیه', url: localizedUrl(params.locale, '/turkey-residence') },
+          ]),
+        ]}
+      />
       <Header dict={dict} locale={params.locale} />
 
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-red-600 to-red-800 text-white pt-32 pb-20">
-        <div className="container mx-auto px-6 text-center">
-          <div className="text-5xl mb-4">🇹🇷</div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-shadow">راهنمای جامع اقامت تحصیلی ترکیه</h1>
-          <p className="text-lg max-w-3xl mx-auto opacity-90">
-            راهنمای کامل و کاربردی فرآیند اخذ اقامت دانشجویی (Öğrenci İkamet İzni) از پذیرش دانشگاه
-            تا صدور و تمدید کارت اقامت — با اصطلاحات رسمی ترکی.
-          </p>
-          <Link
-            href={`/${params.locale}#contact`}
-            className="inline-block mt-8 bg-white text-red-700 font-bold py-3 px-8 rounded-xl transition transform hover:scale-105"
-          >
-            🚀 رزرو مشاوره رایگان
-          </Link>
-        </div>
-      </section>
+      <PageHero
+        locale={params.locale}
+        icon="🇹🇷"
+        title="راهنمای جامع اقامت تحصیلی ترکیه"
+        subtitle="راهنمای کامل و کاربردی فرآیند اخذ اقامت دانشجویی (Öğrenci İkamet İzni) از پذیرش دانشگاه تا صدور و تمدید کارت اقامت — با اصطلاحات رسمی ترکی."
+        accentGradient="from-red-600 to-red-800"
+        breadcrumbs={[
+          { label: 'خانه', href: localePath(params.locale) },
+          { label: dict.nav.turkey },
+        ]}
+      >
+        {pageCtaPrimary(localePath(params.locale, '#contact'), '🚀 رزرو مشاوره رایگان')}
+      </PageHero>
 
-      <main className="container mx-auto px-6 py-16 max-w-5xl space-y-20">
+      <main className="container mx-auto max-w-5xl space-y-20 px-4 py-16 sm:px-6">
         {/* Quick facts */}
         <section>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -192,7 +202,7 @@ export default async function TurkeyResidencePage({ params }: { params: { locale
         </section>
       </main>
 
-      <Footer dict={dict} />
+      <Footer dict={dict} locale={params.locale} />
     </div>
   );
 }

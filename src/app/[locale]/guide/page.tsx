@@ -2,48 +2,61 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getDictionary, locales, type Locale } from '@/lib/i18n';
+import Header from '@/components/Header';
 import FaqAccordion from '@/components/FaqAccordion';
 import Footer from '@/components/Footer';
+import PageHero, { pageCtaPrimary } from '@/components/PageHero';
+import { localePath } from '@/lib/i18n';
+import JsonLd from '@/components/JsonLd';
+import { pageMetadata, articleLd, faqLd, breadcrumbLd, localizedUrl } from '@/lib/seo';
+import { PAGE_SEO } from '@/lib/seo-content';
 import {
   quickFacts, universityTypes, degrees, languageScores,
   admissionDocs, visaDocs, steps, tuition, livingCosts,
   cityCosts, fields, faqItems,
 } from '@/lib/guide-data';
 
-export const metadata: Metadata = {
-  title: 'راهنمای جامع تحصیل در آلمان | مهاجرت آلمان',
-  description: 'راهنمای کامل مهاجرت تحصیلی به آلمان: مقاطع تحصیلی، مدارک لازم، مراحل اقدام، هزینه‌ها، تحصیل رایگان، بورسیه، خوابگاه و سوالات متداول.',
-};
+export function generateMetadata(): Metadata {
+  const s = PAGE_SEO.guide;
+  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description, keywords: s.keywords, type: 'article' });
+}
 
 export default async function GuidePage({ params }: { params: { locale: Locale } }) {
   if (!locales.includes(params.locale)) notFound();
   const dict = await getDictionary(params.locale);
 
   return (
-    <div className="bg-gray-50">
-      {/* Hero */}
-      <section className="flag-bg text-white pt-28 pb-20">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-shadow">راهنمای جامع تحصیل در آلمان</h1>
-          <p className="text-lg max-w-3xl mx-auto opacity-90">
-            تحصیل در دانشگاه‌های دولتی آلمان رایگان است. در این راهنما همه‌چیز درباره سیستم آموزشی،
-            مدارک، مراحل اقدام و هزینه‌ها را توضیح داده‌ایم.
-          </p>
-          <Link
-            href={`/${params.locale}#contact`}
-            className="inline-block mt-8 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-8 rounded-xl transition transform hover:scale-105"
-          >
-            🚀 رزرو مشاوره رایگان
-          </Link>
-        </div>
-      </section>
+    <div className="min-h-screen bg-slate-50">
+      <Header dict={dict} locale={params.locale} />
+      <JsonLd
+        data={[
+          articleLd({ locale: params.locale, path: '/guide', headline: PAGE_SEO.guide.title, description: PAGE_SEO.guide.description }),
+          faqLd(faqItems),
+          breadcrumbLd([
+            { name: 'خانه', url: localizedUrl(params.locale) },
+            { name: 'راهنمای جامع تحصیل در آلمان', url: localizedUrl(params.locale, '/guide') },
+          ]),
+        ]}
+      />
+      <PageHero
+        locale={params.locale}
+        title="راهنمای جامع تحصیل در آلمان"
+        subtitle="تحصیل در دانشگاه‌های دولتی آلمان رایگان است. در این راهنما همه‌چیز درباره سیستم آموزشی، مدارک، مراحل اقدام و هزینه‌ها را توضیح داده‌ایم."
+        eyebrow={dict.nav.guide}
+        breadcrumbs={[
+          { label: 'خانه', href: localePath(params.locale) },
+          { label: dict.nav.guide },
+        ]}
+      >
+        {pageCtaPrimary(localePath(params.locale, '#contact'), '🚀 رزرو مشاوره رایگان')}
+      </PageHero>
 
-      <main className="container mx-auto px-6 py-16 max-w-5xl space-y-20">
+      <main className="container mx-auto max-w-5xl space-y-20 px-4 py-16 sm:px-6">
         {/* Quick facts */}
         <section>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {quickFacts.map((f, i) => (
-              <div key={i} className="bg-white rounded-2xl shadow p-6 flex items-start gap-4 card-hover">
+              <div key={i} className="card-hover flex items-start gap-4 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-soft">
                 <span className="text-3xl">{f.icon}</span>
                 <div>
                   <p className="text-sm text-gray-500">{f.label}</p>
@@ -250,15 +263,15 @@ export default async function GuidePage({ params }: { params: { locale: Locale }
           <h2 className="text-3xl font-bold mb-4">آماده‌اید مسیر مهاجرت تحصیلی را شروع کنید؟</h2>
           <p className="opacity-90 mb-6">کارشناسان ما رایگان شرایط شما را بررسی می‌کنند.</p>
           <Link
-            href={`/${params.locale}#contact`}
-            className="inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-8 rounded-xl transition transform hover:scale-105"
+            href={localePath(params.locale, '#contact')}
+            className="inline-flex items-center justify-center rounded-xl bg-brand-600 px-8 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:bg-brand-700"
           >
             رزرو مشاوره رایگان
           </Link>
         </section>
       </main>
 
-      <Footer dict={dict} />
+      <Footer dict={dict} locale={params.locale} />
     </div>
   );
 }

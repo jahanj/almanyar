@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Dictionary, Locale } from '@/lib/i18n';
+import SectionHeader from './SectionHeader';
 
 const highlights = [
   { icon: '🆓', title: 'تحصیل رایگان', text: 'در دانشگاه‌های دولتی، فقط هزینه ثبت‌نام ۱۵۰-۳۵۰ یورو در ترم' },
@@ -10,20 +11,25 @@ const highlights = [
 
 export default function Education({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   return (
-    <section id="education" className="section-padding bg-gradient-to-br from-gray-50 to-blue-50">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-4">{dict.nav.education}</h2>
-          <p className="text-xl text-gray-600">چرا تحصیل در آلمان؟</p>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-4 rounded-full"></div>
-        </div>
+    <section id="education" className="section-padding bg-white">
+      <div className="container mx-auto px-4 sm:px-6">
+        <SectionHeader
+          eyebrow={dict.nav.education}
+          title={dict.nav.education}
+          subtitle="چرا تحصیل در آلمان؟"
+        />
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-10">
-          {highlights.map((h, i) => (
-            <div key={i} className="bg-white rounded-2xl shadow-xl p-6 text-center card-hover">
-              <div className="text-4xl mb-3 floating-animation">{h.icon}</div>
-              <h3 className="font-bold text-gray-800 mb-2">{h.title}</h3>
-              <p className="text-gray-600 text-sm leading-7">{h.text}</p>
+        <div className="mx-auto mb-10 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {highlights.map((h) => (
+            <div
+              key={h.title}
+              className="card-hover rounded-2xl border border-slate-200/80 bg-slate-50/50 p-6 text-center shadow-soft"
+            >
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-white text-2xl shadow-soft">
+                {h.icon}
+              </div>
+              <h3 className="mb-2 font-semibold text-slate-900">{h.title}</h3>
+              <p className="text-sm leading-relaxed text-slate-600">{h.text}</p>
             </div>
           ))}
         </div>
@@ -31,7 +37,7 @@ export default function Education({ dict, locale }: { dict: Dictionary; locale: 
         <div className="text-center">
           <Link
             href={`/${locale}/guide`}
-            className="inline-block bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white font-bold py-4 px-10 rounded-xl transition transform hover:scale-105 shadow-lg"
+            className="inline-flex items-center justify-center rounded-xl bg-brand-600 px-8 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:bg-brand-700"
           >
             📖 مطالعه راهنمای جامع تحصیل در آلمان
           </Link>

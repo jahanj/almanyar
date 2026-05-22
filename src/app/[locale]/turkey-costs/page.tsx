@@ -4,6 +4,11 @@ import { notFound } from 'next/navigation';
 import { getDictionary, locales, type Locale } from '@/lib/i18n';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PageHero from '@/components/PageHero';
+import { localePath } from '@/lib/i18n';
+import JsonLd from '@/components/JsonLd';
+import { pageMetadata, breadcrumbLd, localizedUrl } from '@/lib/seo';
+import { PAGE_SEO } from '@/lib/seo-content';
 import {
   costsUpdatedAt, inflationNote, minWageNote, monthlySummary,
   rentIstanbul, rentAnkaraIzmir, rentCheaper, rentNote,
@@ -11,10 +16,10 @@ import {
   mobile, insurance, initialCosts, leisure, conclusions,
 } from '@/lib/turkey-costs-data';
 
-export const metadata: Metadata = {
-  title: 'هزینه زندگی در ترکیه ۲۰۲۶ | مهاجرت آلمان',
-  description: 'راهنمای کامل و به‌روز هزینه زندگی دانشجویی در ترکیه (مه ۲۰۲۶): اجاره، خوراک، قبوض، حمل‌ونقل، بیمه و هزینه‌های اولیه ورود — به تفکیک شهر.',
-};
+export function generateMetadata(): Metadata {
+  const s = PAGE_SEO.turkeyCosts;
+  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description, keywords: s.keywords, type: 'article' });
+}
 
 type Table = { headers: string[]; rows: string[][]; caption?: string };
 
@@ -23,21 +28,29 @@ export default async function TurkeyCostsPage({ params }: { params: { locale: Lo
   const dict = await getDictionary(params.locale);
 
   return (
-    <div className="bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
+      <JsonLd
+        data={breadcrumbLd([
+          { name: 'خانه', url: localizedUrl(params.locale) },
+          { name: 'هزینه‌های ترکیه', url: localizedUrl(params.locale, '/turkey-costs') },
+        ])}
+      />
       <Header dict={dict} locale={params.locale} />
 
-      <section className="bg-gradient-to-br from-red-600 to-red-800 text-white pt-32 pb-20">
-        <div className="container mx-auto px-6 text-center">
-          <div className="text-5xl mb-4">🇹🇷💰</div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-shadow">هزینه زندگی در ترکیه</h1>
-          <p className="text-lg max-w-3xl mx-auto opacity-90">
-            راهنمای کامل و به‌روز هزینه‌های زندگی دانشجویی در ترکیه به تفکیک شهر و سبک زندگی
-          </p>
-          <span className="inline-block mt-5 bg-white/20 px-4 py-1 rounded-full text-sm">آخرین به‌روزرسانی: {costsUpdatedAt}</span>
-        </div>
-      </section>
+      <PageHero
+        locale={params.locale}
+        icon="🇹🇷💰"
+        title="هزینه زندگی در ترکیه"
+        subtitle="راهنمای کامل و به‌روز هزینه‌های زندگی دانشجویی در ترکیه به تفکیک شهر و سبک زندگی"
+        eyebrow={`آخرین به‌روزرسانی: ${costsUpdatedAt}`}
+        accentGradient="from-red-600 to-red-800"
+        breadcrumbs={[
+          { label: 'خانه', href: localePath(params.locale) },
+          { label: dict.nav.turkeyCosts },
+        ]}
+      />
 
-      <main className="container mx-auto px-6 py-16 max-w-5xl space-y-16">
+      <main className="container mx-auto max-w-5xl space-y-16 px-4 py-16 sm:px-6">
         {/* Inflation note */}
         <div className="bg-amber-50 border-r-4 border-amber-400 rounded-xl p-5 text-amber-800 leading-8">
           ⚠️ {inflationNote}
@@ -128,7 +141,7 @@ export default async function TurkeyCostsPage({ params }: { params: { locale: Lo
         </section>
       </main>
 
-      <Footer dict={dict} />
+      <Footer dict={dict} locale={params.locale} />
     </div>
   );
 }
