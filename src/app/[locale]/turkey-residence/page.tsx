@@ -7,6 +7,7 @@ import { localePath } from '@/lib/i18n';
 import FaqAccordion from '@/components/FaqAccordion';
 import JsonLd from '@/components/JsonLd';
 import { pageMetadata, faqLd, breadcrumbLd, localizedUrl } from '@/lib/seo';
+import { resolveUpdatedAt } from '@/lib/dates';
 import { PAGE_SEO } from '@/lib/seo-content';
 import {
   trQuickFacts, trPhases, trDocuments, trInsurance,
@@ -39,6 +40,7 @@ export default async function TurkeyResidencePage({ params }: { params: { locale
         icon="🇹🇷"
         title="راهنمای جامع اقامت تحصیلی ترکیه"
         subtitle="راهنمای کامل و کاربردی فرآیند اخذ اقامت دانشجویی (Öğrenci İkamet İzni) از پذیرش دانشگاه تا صدور و تمدید کارت اقامت — با اصطلاحات رسمی ترکی."
+        updatedAt={resolveUpdatedAt({ sourceFile: 'src/app/[locale]/turkey-residence/page.tsx' })}
         accentGradient="from-red-600 to-red-800"
         breadcrumbs={[
           { label: 'خانه', href: localePath(params.locale) },

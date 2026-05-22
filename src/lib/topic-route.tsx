@@ -6,6 +6,7 @@ import PageHero, { pageCtaPrimary, pageCtaSecondary } from '@/components/PageHer
 import JsonLd from '@/components/JsonLd';
 import FaqAccordion from '@/components/FaqAccordion';
 import { pageMetadata, breadcrumbLd, faqLd, articleLd, localizedUrl } from '@/lib/seo';
+import { resolveUpdatedAt } from '@/lib/dates';
 import { TOPICS, TOPIC_BY_PATH, GROUP_STYLE, SEGMENT_LABEL, type Topic } from '@/lib/germany-topics';
 import { TOPIC_CONTENT } from '@/lib/topic-content';
 import type { TopicContent } from '@/lib/topic-content/types';
@@ -91,6 +92,11 @@ export function topicRoute(segment: string) {
       .map((g) => TOPICS.find((t) => t.group === g))
       .filter((t): t is Topic => Boolean(t));
 
+    const updatedAt = resolveUpdatedAt({
+      explicit: content?.updatedAt,
+      sourceFile: 'src/lib/topic-route.tsx',
+    });
+
     const jsonLd: object[] = [
       breadcrumbLd([
         { name: 'خانه', url: localizedUrl(locale) },
@@ -102,6 +108,7 @@ export function topicRoute(segment: string) {
         path: topic.href,
         headline: topic.title,
         description: content?.intro ?? topic.desc,
+        dateModified: updatedAt,
       }),
     ];
     if (content?.faqs?.length) jsonLd.push(faqLd(content.faqs));
@@ -117,6 +124,7 @@ export function topicRoute(segment: string) {
           title={topic.title}
           subtitle={content?.intro ?? topic.desc}
           accentGradient={style.gradient}
+          updatedAt={updatedAt}
           breadcrumbs={[
             { label: 'خانه', href: localePath(locale) },
             { label: segLabel, href: localePath(locale, '/' + segment) },

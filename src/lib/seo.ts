@@ -257,6 +257,10 @@ export function articleLd(input: {
   headline: string;
   description: string;
   image?: string;
+  /** ISO date (YYYY-MM-DD). Emitted as both datePublished + dateModified
+   *  unless overridden. */
+  dateModified?: string;
+  datePublished?: string;
 }) {
   return {
     '@context': 'https://schema.org',
@@ -264,6 +268,8 @@ export function articleLd(input: {
     headline: input.headline,
     description: input.description,
     inLanguage: HREFLANG[input.locale],
+    ...(input.datePublished ? { datePublished: input.datePublished } : {}),
+    ...(input.dateModified ? { dateModified: input.dateModified } : {}),
     image: absoluteUrl(input.image ?? SITE.ogImage),
     mainEntityOfPage: localizedUrl(input.locale, input.path),
     author: { '@id': `${SITE.url}/#organization` },

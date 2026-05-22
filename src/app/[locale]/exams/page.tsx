@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getDictionary, locales, type Locale } from '@/lib/i18n';
 import PageHero from '@/components/PageHero';
 import { localePath } from '@/lib/i18n';
+import { resolveUpdatedAt } from '@/lib/dates';
 import FaqAccordion from '@/components/FaqAccordion';
 import JsonLd from '@/components/JsonLd';
 import ExamRegisterForm from '@/components/ExamRegisterForm';
@@ -66,6 +67,7 @@ export default async function ExamsPage({ params }: { params: { locale: Locale }
         eyebrow="خدمت ویژه آلمانیار"
         title="ثبت‌نام آزمون‌های زبان آلمانی — گوته، telc، TestDaF و بیشتر"
         subtitle="رزرو صندلی و ثبت‌نام آزمون در مراکز معتبر ترکیه و آزمون‌های مرتبط با آلمان را به ما بسپارید. از انتخاب آزمون تا پرداخت هزینه، همه‌چیز بدون استرس و در کنار شما."
+        updatedAt={resolveUpdatedAt({ sourceFile: 'src/app/[locale]/exams/page.tsx' })}
         breadcrumbs={[
           { label: 'خانه', href: localePath(params.locale) },
           { label: 'ثبت‌نام آزمون‌ها' },

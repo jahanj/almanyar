@@ -7,6 +7,7 @@ import PageHero, { pageCtaPrimary } from '@/components/PageHero';
 import { localePath } from '@/lib/i18n';
 import JsonLd from '@/components/JsonLd';
 import { pageMetadata, articleLd, faqLd, breadcrumbLd, localizedUrl } from '@/lib/seo';
+import { resolveUpdatedAt } from '@/lib/dates';
 import { PAGE_SEO } from '@/lib/seo-content';
 import {
   quickFacts, universityTypes, degrees, languageScores,
@@ -40,6 +41,7 @@ export default async function GuidePage({ params }: { params: { locale: Locale }
         title="راهنمای جامع تحصیل در آلمان"
         subtitle="تحصیل در دانشگاه‌های دولتی آلمان رایگان است. در این راهنما همه‌چیز درباره سیستم آموزشی، مدارک، مراحل اقدام و هزینه‌ها را توضیح داده‌ایم."
         eyebrow={dict.nav.guide}
+        updatedAt={resolveUpdatedAt({ sourceFile: 'src/app/[locale]/guide/page.tsx' })}
         breadcrumbs={[
           { label: 'خانه', href: localePath(params.locale) },
           { label: dict.nav.guide },

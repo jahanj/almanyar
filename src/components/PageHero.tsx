@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n';
 import { localePath } from '@/lib/i18n';
+import { formatJalali } from '@/lib/dates';
 
 type Breadcrumb = { label: string; href?: string };
 
@@ -13,6 +14,9 @@ type PageHeroProps = {
   breadcrumbs?: Breadcrumb[];
   variant?: 'light' | 'brand';
   accentGradient?: string;
+  /** ISO date (YYYY-MM-DD). When present, renders "آخرین به‌روزرسانی: …"
+   *  below the H1 using the Persian (Jalali) calendar. */
+  updatedAt?: string;
   children?: React.ReactNode;
 };
 
@@ -25,6 +29,7 @@ export default function PageHero({
   breadcrumbs,
   variant = 'light',
   accentGradient,
+  updatedAt,
   children,
 }: PageHeroProps) {
   const isAccent = Boolean(accentGradient);
@@ -104,6 +109,18 @@ export default function PageHero({
         >
           {title}
         </h1>
+
+        {updatedAt && (
+          <p
+            data-testid="last-updated"
+            className={[
+              'mt-3 text-sm',
+              isBrand ? 'text-white/70' : 'text-slate-500',
+            ].join(' ')}
+          >
+            آخرین به‌روزرسانی: <time dateTime={updatedAt}>{formatJalali(updatedAt)}</time>
+          </p>
+        )}
 
         {subtitle && (
           <p

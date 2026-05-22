@@ -3,12 +3,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getDictionary, locales, type Locale } from '@/lib/i18n';
 import PageHero from '@/components/PageHero';
+import { resolveUpdatedAt } from '@/lib/dates';
 import { localePath } from '@/lib/i18n';
 import JsonLd from '@/components/JsonLd';
 import { pageMetadata, breadcrumbLd, localizedUrl } from '@/lib/seo';
 import { PAGE_SEO } from '@/lib/seo-content';
 import {
-  costsUpdatedAt, inflationNote, minWageNote, monthlySummary,
+  inflationNote, minWageNote, monthlySummary,
   rentIstanbul, rentAnkaraIzmir, rentCheaper, rentNote,
   food, foodPricesNote, utilities, transportNote, transport,
   mobile, insurance, initialCosts, leisure, conclusions,
@@ -39,7 +40,7 @@ export default async function TurkeyCostsPage({ params }: { params: { locale: Lo
         icon="🇹🇷💰"
         title="هزینه زندگی در ترکیه"
         subtitle="راهنمای کامل و به‌روز هزینه‌های زندگی دانشجویی در ترکیه به تفکیک شهر و سبک زندگی"
-        eyebrow={`آخرین به‌روزرسانی: ${costsUpdatedAt}`}
+        updatedAt={resolveUpdatedAt({ sourceFile: 'src/app/[locale]/turkey-costs/page.tsx' })}
         accentGradient="from-red-600 to-red-800"
         breadcrumbs={[
           { label: 'خانه', href: localePath(params.locale) },
