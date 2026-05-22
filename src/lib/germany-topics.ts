@@ -111,7 +111,7 @@ export const SEGMENT_LABEL: Record<string, string> = {
 
 export const TOPICS: Topic[] = [
   // ── Visa ──────────────────────────────────────────────
-  { title: 'ویزای آلمان چیست؟', href: '/germany-visa', icon: '🛂', group: 'visa', desc: 'آشنایی با انواع ویزای آلمان و کاربرد هرکدام برای ایرانیان.' },
+  { title: 'ویزای آلمان چیست؟', href: '/germany-visa/what-is', icon: '🛂', group: 'visa', desc: 'آشنایی با انواع ویزای آلمان و کاربرد هرکدام برای ایرانیان.' },
   { title: 'شرایط دریافت ویزای آلمان', href: '/germany-visa/requirements', icon: '✅', group: 'visa', desc: 'مهم‌ترین شرایط و پیش‌نیازهای اخذ ویزای آلمان.' },
   { title: 'مدارک لازم برای ویزای آلمان', href: '/germany-visa/documents', icon: '📄', group: 'visa', desc: 'فهرست کامل مدارک موردنیاز برای درخواست ویزا.' },
   { title: 'وقت سفارت آلمان از ترکیه', href: '/germany-visa/appointment-from-turkey', icon: '📅', group: 'visa', desc: 'نحوه گرفتن وقت سفارت آلمان از ترکیه و نکات آن.' },

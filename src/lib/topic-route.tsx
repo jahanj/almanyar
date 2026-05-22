@@ -331,11 +331,20 @@ export function topicRoute(segment: string) {
   return { generateStaticParams, generateMetadata, Page };
 }
 
+/** Per-segment hub intro copy. Visa specifically gets a tailored intro that
+ *  steers visitors to the long-form "what is" article. */
+const HUB_INTRO: Record<string, string> = {
+  'germany-visa':
+    'ویزای آلمان انواع متفاوتی دارد — تحصیلی، کاری، آوسبیلدونگ، شنگن، پیوست خانواده و کارت شانس. ' +
+    'برای آشنایی کلی با ماهیت ویزای آلمان مقالهٔ «ویزای آلمان چیست؟» را ببینید، یا یکی از موضوعات تخصصی زیر را انتخاب کنید.',
+};
+
 /** Group-index landing page used when /fa/<segment> has no specific topic. */
 function groupIndexPage(segment: string, locale: Locale) {
   const segLabel = SEGMENT_LABEL[segment] ?? segment;
   const topicsInGroup = TOPICS.filter((t) => t.href.split('/')[1] === segment);
   const style = topicsInGroup[0] ? GROUP_STYLE[topicsInGroup[0].group] : GROUP_STYLE.visa;
+  const subtitle = HUB_INTRO[segment] ?? 'موضوعات این بخش را در ادامه ببینید.';
 
   const jsonLd = breadcrumbLd([
     { name: 'خانه', url: localizedUrl(locale) },
@@ -350,7 +359,7 @@ function groupIndexPage(segment: string, locale: Locale) {
         locale={locale}
         eyebrow={segLabel}
         title={segLabel}
-        subtitle="موضوعات این بخش را در ادامه ببینید."
+        subtitle={subtitle}
         accentGradient={style.gradient}
         breadcrumbs={[
           { label: 'خانه', href: localePath(locale) },
