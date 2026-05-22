@@ -191,7 +191,7 @@ export default async function TurkeyResidencePage({ params }: { params: { locale
         {/* CTA */}
         <section className="bg-gradient-to-br from-red-600 to-red-800 rounded-3xl p-10 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">برای اخذ اقامت تحصیلی ترکیه به کمک نیاز دارید؟</h2>
-          <p className="opacity-90 mb-6">کارشناسان ما در تمام مراحل از پذیرش تا صدور کارت همراه شما هستند.</p>
+          <p className="opacity-90 mb-6">ما در تمام مراحل از پذیرش تا صدور کارت همراه شما هستیم.</p>
           <Link
             href={`/${params.locale}#contact`}
             className="inline-block bg-white text-red-700 font-bold py-3 px-8 rounded-xl transition transform hover:scale-105"

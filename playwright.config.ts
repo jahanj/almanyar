@@ -5,7 +5,7 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
   testDir: './tests',
-  testMatch: ['phase-1/**/*.spec.ts', 'phase-2/**/*.spec.ts'],
+  testMatch: ['phase-1/**/*.spec.ts', 'phase-2/**/*.spec.ts', 'phase-3/**/*.spec.ts'],
   timeout: 30_000,
   expect: { timeout: 5_000 },
   fullyParallel: false,

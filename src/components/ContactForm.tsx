@@ -225,7 +225,7 @@ export default function ContactForm({ dict }: { dict: Dictionary }) {
               </div>
               <p className="text-sm font-semibold text-emerald-800">{msg}</p>
               <p className="mt-2 text-sm leading-7 text-emerald-700">
-                کارشناسان ما به‌زودی برای هماهنگی با شما تماس می‌گیرند.
+                ما به‌زودی برای هماهنگی با شما تماس می‌گیریم.
               </p>
               <button
                 type="button"

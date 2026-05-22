@@ -127,7 +127,7 @@ export default async function TurkeyCostsPage({ params }: { params: { locale: Lo
         {/* Cross-links + CTA */}
         <section className="bg-gradient-to-br from-red-600 to-red-800 rounded-3xl p-10 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">برنامه‌ریزی مالی برای زندگی در ترکیه</h2>
-          <p className="opacity-90 mb-6">برای مشاوره دقیق متناسب با شرایط شما با کارشناسان ما در تماس باشید.</p>
+          <p className="opacity-90 mb-6">برای مشاوره دقیق متناسب با شرایط شما با ما در تماس باشید.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={`/${params.locale}/turkey-residence`} className="inline-block bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-8 rounded-xl transition">
               🛂 راهنمای اقامت تحصیلی ترکیه

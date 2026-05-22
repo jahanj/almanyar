@@ -209,7 +209,7 @@ export default function EvaluationWizard() {
         <div className="text-6xl mb-4">✅</div>
         <h2 className="text-2xl font-bold mb-3 text-gray-800">فرم ارزیابی شما ثبت شد</h2>
         <p className="text-gray-600 leading-8">
-          کارشناسان ما شرایط شما را با دقت بررسی می‌کنند و نتیجه ارزیابی به‌زودی از طریق ایمیل
+          من شرایط شما را با دقت بررسی می‌کنم و نتیجه ارزیابی به‌زودی از طریق ایمیل
           برایتان ارسال می‌شود.
         </p>
       </div>

@@ -140,7 +140,7 @@ export default async function ExamsPage({ params }: { params: { locale: Locale }
 
         {/* Registration form */}
         <section id="register" className="scroll-mt-24">
-          <SectionHeading title="درخواست ثبت‌نام آزمون" subtitle="فرم را پر کنید؛ کارشناسان ما تماس می‌گیرند و کار را شروع می‌کنیم" />
+          <SectionHeading title="درخواست ثبت‌نام آزمون" subtitle="فرم را پر کنید؛ ما تماس می‌گیریم و کار را شروع می‌کنیم" />
           <div className="max-w-3xl mx-auto">
             <ExamRegisterForm />
           </div>

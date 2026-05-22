@@ -260,7 +260,7 @@ export default async function GuidePage({ params }: { params: { locale: Locale }
         {/* CTA */}
         <section className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-10 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">آماده‌اید مسیر مهاجرت تحصیلی را شروع کنید؟</h2>
-          <p className="opacity-90 mb-6">کارشناسان ما رایگان شرایط شما را بررسی می‌کنند.</p>
+          <p className="opacity-90 mb-6">من رایگان شرایط شما را بررسی می‌کنم.</p>
           <Link
             href={localePath(params.locale, '#contact')}
             className="inline-flex items-center justify-center rounded-xl bg-brand-600 px-8 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:bg-brand-700"
