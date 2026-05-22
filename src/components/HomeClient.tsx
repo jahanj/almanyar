@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import CinematicJourneyHero from './journey/CinematicJourneyHero';
 import TrustBar from './TrustBar';
+import TrustModel from './TrustModel';
 import Services from './Services';
 import Process from './Process';
 import Education from './Education';
@@ -52,6 +53,7 @@ export default function HomeClient({
           onReviewClick={() => setOpen(true)}
         />
         <TrustBar dict={dict} />
+        <TrustModel locale={locale} />
         <Services dict={dict} />
         <Process dict={dict} />
         <Education dict={dict} locale={locale} />
