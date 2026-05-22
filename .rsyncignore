@@ -1,0 +1,26 @@
+# Used by the documented production deploy in DEPLOY.md:
+#   rsync -av --exclude-from=.rsyncignore ./ root@SERVER_IP:/opt/germanbiz/
+#
+# DO NOT remove any of these without thinking — at least one will silently
+# wipe production state if it goes through.
+#
+# ───────────────────────────── runtime state ────────────────────────────────
+# Let's Encrypt SSL certs + ACME-challenge dir live ONLY on the server.
+# Wiping them takes HTTPS down on the next nginx restart.
+docker/certbot/
+
+# Postgres data dir (volume content) and user uploads — must never be touched.
+postgres-data/
+uploads/
+
+# Production secrets (.env is created from .env.production.example on the box).
+.env
+.env.local
+
+# ──────────────────────────── build / dev artifacts ─────────────────────────
+node_modules/
+.next/
+.git/
+test-results/
+playwright-report/
+*.log
