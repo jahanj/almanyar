@@ -1,30 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import * as Accordion from '@radix-ui/react-accordion';
+import { ChevronDown } from 'lucide-react';
 
 export type FaqItem = { q: string; a: string };
 
+/**
+ * Accessible FAQ accordion built on Radix.
+ * - Single-item open at a time, collapsible.
+ * - Radix provides aria-expanded / aria-controls / id wiring and full keyboard
+ *   support (Tab, Enter, Space, ArrowUp/ArrowDown, Home, End).
+ * - Open/close animation runs via the data-state attribute + CSS only, no JS
+ *   measurement of content height (smoother + cheaper).
+ */
 export default function FaqAccordion({ items }: { items: FaqItem[] }) {
-  const [open, setOpen] = useState<number | null>(null);
-
   return (
-    <div className="space-y-3">
+    <Accordion.Root type="single" collapsible className="space-y-3">
       {items.map((item, i) => (
-        <div key={i} className="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden">
-          <button
-            onClick={() => setOpen(open === i ? null : i)}
-            className="w-full flex justify-between items-center text-right px-6 py-4 font-bold text-gray-800 hover:bg-gray-50 transition"
-          >
-            <span>{item.q}</span>
-            <span className={`text-blue-600 text-2xl transition-transform ${open === i ? 'rotate-45' : ''}`}>+</span>
-          </button>
-          {open === i && (
-            <div className="px-6 pb-5 text-gray-600 leading-8 whitespace-pre-wrap border-t border-gray-100 pt-4">
-              {item.a}
-            </div>
-          )}
-        </div>
+        <Accordion.Item
+          key={i}
+          value={`item-${i}`}
+          className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow"
+        >
+          <Accordion.Header className="flex">
+            <Accordion.Trigger
+              className="group flex w-full items-center justify-between gap-3 px-6 py-4 text-right text-base font-bold text-gray-800 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            >
+              <span>{item.q}</span>
+              <ChevronDown
+                className="h-5 w-5 shrink-0 text-brand-600 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                aria-hidden="true"
+              />
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="cj-faq-content overflow-hidden border-t border-gray-100 text-gray-600">
+            <div className="whitespace-pre-wrap px-6 py-4 leading-8">{item.a}</div>
+          </Accordion.Content>
+        </Accordion.Item>
       ))}
-    </div>
+    </Accordion.Root>
   );
 }
