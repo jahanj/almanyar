@@ -34,9 +34,8 @@ export const PUBLIC_ROUTES: PublicRoute[] = [
   { path: '/turkey-costs',               priority: 0.8, changeFrequency: 'monthly', source: 'src/app/[locale]/turkey-costs/page.tsx' },
   { path: '/evaluation',                 priority: 0.7, changeFrequency: 'monthly', source: 'src/app/[locale]/evaluation/page.tsx' },
   { path: '/how-it-works',               priority: 0.8, changeFrequency: 'yearly',  source: 'src/lib/positioning-content.ts' },
-  // Phase-2 LEGAL additions wired in their respective commits:
-  // { path: '/disclaimer',              priority: 0.3, changeFrequency: 'yearly',  source: 'src/lib/legal-content.ts' },
-  // { path: '/privacy',                 priority: 0.3, changeFrequency: 'yearly',  source: 'src/lib/legal-content.ts' },
+  { path: '/disclaimer',                 priority: 0.3, changeFrequency: 'yearly',  source: 'src/lib/legal-content.ts' },
+  { path: '/privacy',                    priority: 0.3, changeFrequency: 'yearly',  source: 'src/lib/legal-content.ts' },
 ];
 
 /** Final-fallback "last updated" date when neither explicit `updatedAt`

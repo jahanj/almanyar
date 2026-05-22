@@ -31,7 +31,32 @@ export default function Footer({ dict, locale = defaultLocale }: { dict: Diction
               </Link>
             </nav>
           </div>
-          <div className="mt-10 border-t border-slate-800 pt-6 text-center text-sm text-slate-500 md:text-start">
+
+          {/* Legal links — required by LEGAL-01/02. */}
+          <nav
+            className="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-slate-500 md:justify-start"
+            aria-label="Legal"
+          >
+            <Link href={localePath(locale, '/disclaimer')} className="transition hover:text-slate-300">
+              سلب مسئولیت
+            </Link>
+            <Link href={localePath(locale, '/privacy')} className="transition hover:text-slate-300">
+              حریم خصوصی
+            </Link>
+            <Link href={localePath(locale, '/how-it-works')} className="transition hover:text-slate-300">
+              نحوه کار ما
+            </Link>
+          </nav>
+
+          {/* LEGAL-05 — independence disclosure. Sits ABOVE the © line. */}
+          <p
+            className="mt-6 text-center text-xs leading-6 text-slate-500 md:text-start"
+            data-testid="footer-independence"
+          >
+            آلمانیار یک منبع اطلاع‌رسانی مستقل است و وابسته به هیچ نهاد رسمی نیست.
+          </p>
+
+          <div className="mt-3 border-t border-slate-800 pt-6 text-center text-sm text-slate-500 md:text-start">
             © {year} — {dict.footer.rights}
           </div>
         </div>
