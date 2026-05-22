@@ -4,7 +4,8 @@ const PORT = Number(process.env.PLAYWRIGHT_PORT ?? 3055);
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
-  testDir: './tests/phase-1',
+  testDir: './tests',
+  testMatch: ['phase-1/**/*.spec.ts', 'phase-2/**/*.spec.ts'],
   timeout: 30_000,
   expect: { timeout: 5_000 },
   fullyParallel: false,
