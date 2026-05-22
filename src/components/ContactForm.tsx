@@ -31,6 +31,9 @@ type FormState = {
   preferredTime: string;
   website: string;
   confirmed: boolean;
+  // LEGAL-04 — consent record.
+  termsAccepted: boolean;
+  marketingConsent: boolean;
 };
 
 const initialFormState: FormState = {
@@ -43,6 +46,8 @@ const initialFormState: FormState = {
   preferredTime: 'FLEXIBLE',
   website: '',
   confirmed: false,
+  termsAccepted: false,
+  marketingConsent: false,
 };
 
 const cardButtonBase =
@@ -126,6 +131,12 @@ export default function ContactForm({ dict }: { dict: Dictionary }) {
       return;
     }
 
+    // LEGAL-04 — required consent gate.
+    if (!form.termsAccepted) {
+      setErr('برای ارسال فرم، موافقت با حریم خصوصی و سلب مسئولیت لازم است.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -142,6 +153,10 @@ export default function ContactForm({ dict }: { dict: Dictionary }) {
         ].join('\n'),
         serviceType: form.serviceType,
         website: form.website,
+        consent: {
+          termsAccepted: form.termsAccepted,
+          marketingConsent: form.marketingConsent,
+        },
       };
 
       const res = await fetch('/api/contact', {
@@ -394,6 +409,40 @@ export default function ContactForm({ dict }: { dict: Dictionary }) {
                           className="mt-1 h-5 w-5 rounded border-slate-400 text-slate-950 focus:ring-slate-950"
                         />
                         <span>اطلاعات بالا را تایید می‌کنم و آماده‌ی تماس مشاوره هستم.</span>
+                      </label>
+
+                      {/* LEGAL-04 — required terms + optional marketing. */}
+                      <label
+                        className="mt-3 flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-800"
+                        data-testid="contact-consent-terms-wrap"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={form.termsAccepted}
+                          onChange={(event) => setForm((current) => ({ ...current, termsAccepted: event.target.checked }))}
+                          className="mt-1 h-5 w-5 rounded border-slate-400 text-slate-950 focus:ring-slate-950"
+                          data-testid="contact-consent-terms"
+                        />
+                        <span>
+                          با{' '}
+                          <a href="/fa/privacy" target="_blank" rel="noopener" className="text-brand-700 underline-offset-2 hover:underline">حریم خصوصی</a>{' '}
+                          و{' '}
+                          <a href="/fa/disclaimer" target="_blank" rel="noopener" className="text-brand-700 underline-offset-2 hover:underline">سلب مسئولیت</a>{' '}
+                          موافقم <span className="text-red-500">*</span>
+                        </span>
+                      </label>
+                      <label
+                        className="mt-3 flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-800"
+                        data-testid="contact-marketing-wrap"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={form.marketingConsent}
+                          onChange={(event) => setForm((current) => ({ ...current, marketingConsent: event.target.checked }))}
+                          className="mt-1 h-5 w-5 rounded border-slate-400 text-slate-950 focus:ring-slate-950"
+                          data-testid="contact-marketing"
+                        />
+                        <span>موافقم راهنماها و اطلاعات مفید را از طریق ایمیل دریافت کنم (اختیاری)</span>
                       </label>
                     </div>
                   </div>

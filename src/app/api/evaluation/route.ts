@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
 import { sendMail } from '@/lib/mailer';
+import { ConsentInputSchema, consentDbFields, extractClientMeta } from '@/lib/consent';
 
 const PreferenceSchema = z.object({
   university: z.string().max(150).optional().nullable(),
@@ -57,6 +58,9 @@ const EvaluationSchema = z.object({
   howFoundUs: z.string().max(80).optional().nullable(),
   referralCode: z.string().max(80).optional().nullable(),
   description: z.string().max(5000).optional().nullable(),
+
+  // LEGAL-04 — required consent + optional marketing.
+  consent: ConsentInputSchema.optional(),
 });
 
 export async function POST(req: Request) {
@@ -81,13 +85,24 @@ export async function POST(req: Request) {
       );
     }
 
-    const { targetPreferences, ...rest } = parsed.data;
+    // Gate: terms checkbox must be true to persist. We accept the request
+    // structurally but refuse to write without an explicit accept.
+    if (!parsed.data.consent?.termsAccepted) {
+      return NextResponse.json(
+        { error: 'برای ارسال فرم، موافقت با حریم خصوصی و سلب مسئولیت لازم است.' },
+        { status: 400 }
+      );
+    }
+
+    const { targetPreferences, consent, ...rest } = parsed.data;
+    const consentMeta = extractClientMeta(req.headers);
 
     const evaluation = await prisma.evaluation.create({
       data: {
         ...rest,
         targetPreferences: targetPreferences ?? undefined,
         userId: session?.user?.id ?? null,
+        ...consentDbFields(consent, consentMeta),
       },
       select: { id: true, createdAt: true },
     });

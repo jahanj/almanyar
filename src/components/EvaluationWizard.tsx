@@ -39,6 +39,9 @@ type FormState = {
   howFoundUs: string;
   referralCode: string;
   description: string;
+  // LEGAL-04 — consent record.
+  termsAccepted: boolean;
+  marketingConsent: boolean;
 };
 
 const initialState: FormState = {
@@ -50,6 +53,7 @@ const initialState: FormState = {
   bachelorField: '', bachelorGpa: '', targetDegree: '', targetPreferences: [],
   jobTitle: '', workExperienceYears: '', currentlyEmployed: false,
   howFoundUs: '', referralCode: '', description: '',
+  termsAccepted: false, marketingConsent: false,
 };
 
 const STEPS = [
@@ -147,11 +151,17 @@ export default function EvaluationWizard() {
       setDone(true);
       return;
     }
+    // LEGAL-04 — required consent gate.
+    if (!form.termsAccepted) {
+      setError('برای ارسال فرم، موافقت با حریم خصوصی و سلب مسئولیت لازم است.');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
+      const { termsAccepted, marketingConsent, ...rest } = form;
       const payload = {
-        ...form,
+        ...rest,
         country: form.country || null,
         gender: form.gender || null,
         maritalStatus: form.maritalStatus || null,
@@ -174,6 +184,7 @@ export default function EvaluationWizard() {
         howFoundUs: form.howFoundUs || null,
         referralCode: form.referralCode || null,
         description: form.description || null,
+        consent: { termsAccepted, marketingConsent },
       };
       const res = await fetch('/api/evaluation', {
         method: 'POST',
@@ -488,6 +499,38 @@ export default function EvaluationWizard() {
           <Field label="توضیحات">
             <textarea className={inp} rows={5} placeholder="اگر نکته‌ای را می‌خواهید بگویید، اینجا بنویسید." value={form.description} onChange={(e) => set('description', e.target.value)} />
           </Field>
+
+          {/* LEGAL-04 — required terms + optional marketing consent. */}
+          <div className="mt-6 space-y-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <label className="flex items-start gap-3 cursor-pointer" data-testid="eval-consent-terms-wrap">
+              <input
+                type="checkbox"
+                className="mt-1.5"
+                checked={form.termsAccepted}
+                onChange={(e) => set('termsAccepted', e.target.checked)}
+                data-testid="eval-consent-terms"
+              />
+              <span className="text-sm leading-7 text-gray-700">
+                با{' '}
+                <a href="/fa/privacy" target="_blank" rel="noopener" className="text-brand-700 underline-offset-2 hover:underline">حریم خصوصی</a>{' '}
+                و{' '}
+                <a href="/fa/disclaimer" target="_blank" rel="noopener" className="text-brand-700 underline-offset-2 hover:underline">سلب مسئولیت</a>{' '}
+                موافقم <span className="text-red-500">*</span>
+              </span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer" data-testid="eval-marketing-wrap">
+              <input
+                type="checkbox"
+                className="mt-1.5"
+                checked={form.marketingConsent}
+                onChange={(e) => set('marketingConsent', e.target.checked)}
+                data-testid="eval-marketing"
+              />
+              <span className="text-sm leading-7 text-gray-700">
+                موافقم راهنماها و اطلاعات مفید را از طریق ایمیل دریافت کنم (اختیاری)
+              </span>
+            </label>
+          </div>
         </Section>
       )}
 

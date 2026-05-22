@@ -181,6 +181,13 @@ model ContactRequest {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
+  // Consent record (LEGAL-04). All nullable — old rows stay NULL.
+  consentAcceptedAt   DateTime?
+  consentTermsVersion Int?
+  consentIp           String?
+  consentUserAgent    String?
+  marketingConsent    Boolean?
+
   user        User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([status])
@@ -240,6 +247,13 @@ model Evaluation {
   adminNotes String? @db.Text
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  // Consent record (LEGAL-04). All nullable — old rows stay NULL.
+  consentAcceptedAt   DateTime?
+  consentTermsVersion Int?
+  consentIp           String?
+  consentUserAgent    String?
+  marketingConsent    Boolean?
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 

@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { notifyAdminNewContact } from '@/lib/mailer';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
+import { ConsentInputSchema, consentDbFields, extractClientMeta } from '@/lib/consent';
 
 const ContactSchema = z.object({
   fullName: z.string().min(2).max(120),
@@ -24,6 +25,7 @@ const ContactSchema = z.object({
     .optional()
     .nullable(),
   website: z.string().optional(), // honeypot — must stay empty
+  consent: ConsentInputSchema.optional(),
 });
 
 export async function POST(req: Request) {
@@ -53,11 +55,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: 'درخواست شما با موفقیت ثبت شد.' }, { status: 201 });
     }
 
-    const { website: _hp, ...contactData } = parsed.data;
+    if (!parsed.data.consent?.termsAccepted) {
+      return NextResponse.json(
+        { error: 'برای ارسال فرم، موافقت با حریم خصوصی و سلب مسئولیت لازم است.' },
+        { status: 400 }
+      );
+    }
+
+    const { website: _hp, consent, ...contactData } = parsed.data;
+    const consentMeta = extractClientMeta(req.headers);
     const request = await prisma.contactRequest.create({
       data: {
         ...contactData,
         userId: session?.user?.id ?? null,
+        ...consentDbFields(consent, consentMeta),
       },
       select: { id: true, createdAt: true },
     });
