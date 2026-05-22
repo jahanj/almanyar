@@ -118,9 +118,22 @@ body {
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
 }
 
+/* Migration-journey atmospheric twinkle (city lights / stars). */
+@keyframes journeyTwinkle {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.6); }
+}
+.journey-twinkle {
+  animation-name: journeyTwinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: opacity, transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .card-hover,
-  .star {
+  .star,
+  .journey-twinkle {
     animation: none !important;
     transition: none !important;
     transform: none !important;

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Header from './Header';
-import Hero from './Hero';
+import CinematicJourneyHero from './journey/CinematicJourneyHero';
 import TrustBar from './TrustBar';
 import Services from './Services';
 import Process from './Process';
@@ -44,7 +44,7 @@ export default function HomeClient({
     <>
       <Header dict={dict} locale={locale} />
       <main>
-        <Hero
+        <CinematicJourneyHero
           dict={dict}
           locale={locale}
           averageRating={averageRating}
