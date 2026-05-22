@@ -6,6 +6,7 @@ import HomeClient from '@/components/HomeClient';
 import JsonLd from '@/components/JsonLd';
 import { faqLd, pageMetadata, serviceLd } from '@/lib/seo';
 import { PAGE_SEO } from '@/lib/seo-content';
+import { loadSiteStats } from '@/lib/site-stats';
 
 // Rendered per-request: the homepage reads live reviews/ratings from the DB,
 // which isn't available at Docker build time, so it must not be prerendered.
@@ -20,11 +21,6 @@ type ReviewRow = {
   title: string | null;
   content: string;
   createdAt: Date;
-};
-
-type ReviewAggregate = {
-  _avg: { rating: number | null };
-  _count: number;
 };
 
 function loadHomepageReviews() {
@@ -56,10 +52,9 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
   if (!locales.includes(params.locale)) notFound();
   const dict = await getDictionary(params.locale);
 
-  const result = await loadHomepageReviews();
+  const [result, stats] = await Promise.all([loadHomepageReviews(), loadSiteStats()]);
 
   const reviews: ReviewRow[] = result?.reviews ?? [];
-  const agg: ReviewAggregate = result?.agg ?? { _avg: { rating: null }, _count: 0 };
   const serialized = reviews.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() }));
 
   return (
@@ -69,8 +64,7 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
         dict={dict}
         locale={params.locale}
         initialReviews={serialized}
-        averageRating={Number(agg._avg.rating ?? 0)}
-        totalReviews={agg._count}
+        stats={stats}
       />
     </>
   );

@@ -279,3 +279,19 @@ model SiteSettings {
   instagramHandle String?
   updatedAt       DateTime @updatedAt
 }
+
+// Editable homepage hero stats. Singleton (id = 1). NULL means "not yet
+// counted" — the frontend hides the corresponding card / block rather than
+// showing a literal zero. See BUG-03.
+// reviewsCount and averageRating are a manual override; if there are any
+// APPROVED reviews in the Review table, the live aggregate wins.
+model SiteStats {
+  id                   Int      @id @default(1)
+  studentsCount        Int?
+  partnerUniversities  Int?
+  successRate          Int?
+  yearsExperience      Int?
+  averageRating        Float?
+  reviewsCount         Int?
+  updatedAt            DateTime @updatedAt
+}

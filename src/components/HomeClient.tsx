@@ -12,6 +12,7 @@ import ContactForm from './ContactForm';
 import CtaBanner from './CtaBanner';
 import ReviewModal from './ReviewModal';
 import type { Dictionary, Locale } from '@/lib/i18n';
+import type { SiteStatsView } from '@/lib/site-stats';
 
 type Review = {
   id: string;
@@ -26,17 +27,19 @@ export default function HomeClient({
   dict,
   locale,
   initialReviews,
-  averageRating,
-  totalReviews,
+  stats,
 }: {
   dict: Dictionary;
   locale: Locale;
   initialReviews: Review[];
-  averageRating: number;
-  totalReviews: number;
+  stats: SiteStatsView;
 }) {
   const [open, setOpen] = useState(false);
   const [refreshSignal, setRefreshSignal] = useState(0);
+
+  // Reviews section visibility rule (BUG-03): hide entirely below 5 approved
+  // reviews. Star rating + count individually live on the hero scene.
+  const reviewsVisible = (stats.reviews ?? 0) >= 5;
 
   // Header and Footer are rendered by `[locale]/layout.tsx` — see BUG-05.
   return (
@@ -45,8 +48,7 @@ export default function HomeClient({
         <CinematicJourneyHero
           dict={dict}
           locale={locale}
-          averageRating={averageRating}
-          totalReviews={totalReviews}
+          stats={stats}
           onReviewClick={() => setOpen(true)}
         />
         <TrustBar dict={dict} />
@@ -54,7 +56,9 @@ export default function HomeClient({
         <Process dict={dict} />
         <Education dict={dict} locale={locale} />
         <TurkeyResidence dict={dict} locale={locale} />
-        <Testimonials dict={dict} initialReviews={initialReviews} refreshSignal={refreshSignal} />
+        {reviewsVisible && (
+          <Testimonials dict={dict} initialReviews={initialReviews} refreshSignal={refreshSignal} />
+        )}
         <CtaBanner dict={dict} locale={locale} />
         <ContactForm dict={dict} />
       </main>

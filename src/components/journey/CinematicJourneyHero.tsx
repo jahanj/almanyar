@@ -59,19 +59,22 @@ import {
 // Real AlmanYar WhatsApp (Turkey, +90 506 770 8295).
 const WHATSAPP_URL = 'https://wa.me/905067708295';
 
+import type { SiteStatsView } from '@/lib/site-stats';
+
 type Props = {
   dict: Dictionary;
   locale: Locale;
-  averageRating: number;
-  totalReviews: number;
+  stats: SiteStatsView;
   onReviewClick: () => void;
 };
 
-const STAT_ITEMS = [
-  { key: 'students' as const, target: 500, suffix: '+' },
-  { key: 'universities' as const, target: 50, suffix: '+' },
-  { key: 'success' as const, target: 95, suffix: '٪' },
-  { key: 'experience' as const, target: 5, suffix: '+' },
+// Stat cells. `value` is read from `stats`; the cell is hidden when nullish/0.
+type StatKey = 'students' | 'universities' | 'success' | 'experience';
+const STAT_DEFS: Array<{ key: StatKey; field: keyof SiteStatsView; suffix: string }> = [
+  { key: 'students',     field: 'students',     suffix: '+' },
+  { key: 'universities', field: 'universities', suffix: '+' },
+  { key: 'success',      field: 'success',      suffix: '٪' },
+  { key: 'experience',   field: 'experience',   suffix: '+' },
 ];
 
 /* ────────────────────────── Flag color palettes ────────────────────────── */
@@ -318,7 +321,13 @@ function BrandScene({
   rootRef: (el: HTMLDivElement | null) => void;
   props: Props;
 }) {
-  const { dict, locale, averageRating, totalReviews, onReviewClick } = props;
+  const { dict, locale, stats, onReviewClick } = props;
+  // Stat cells with a non-null, non-zero value. Empty array hides the whole grid.
+  const visibleStats = STAT_DEFS.flatMap((d) => {
+    const value = stats[d.field] as number | null;
+    return value == null || value === 0 ? [] : [{ key: d.key, value, suffix: d.suffix }];
+  });
+  const ratingVisible = (stats.reviews ?? 0) > 0 && stats.rating != null;
   return (
     <div
       ref={rootRef}
@@ -360,24 +369,26 @@ function BrandScene({
           />
         </div>
 
-        <div className="cj-brand-stats mx-auto mt-8 grid w-full max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-          {STAT_ITEMS.map(({ key, target, suffix }) => (
-            <div
-              key={key}
-              className="rounded-2xl border border-white/15 bg-white/10 p-4 text-center backdrop-blur-md"
-            >
-              <div className="text-2xl font-bold text-white md:text-3xl">
-                <Counter target={target} />
-                <span className="text-lg" style={{ color: 'var(--cj-accent)' }}>
-                  {suffix}
-                </span>
+        {visibleStats.length > 0 && (
+          <div className="cj-brand-stats mx-auto mt-8 grid w-full max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+            {visibleStats.map(({ key, value, suffix }) => (
+              <div
+                key={key}
+                className="rounded-2xl border border-white/15 bg-white/10 p-4 text-center backdrop-blur-md"
+              >
+                <div className="text-2xl font-bold text-white md:text-3xl">
+                  <Counter target={value} />
+                  <span className="text-lg" style={{ color: 'var(--cj-accent)' }}>
+                    {suffix}
+                  </span>
+                </div>
+                <div className="mt-1 text-xs font-medium text-white/70">
+                  {dict.hero.stats[key]}
+                </div>
               </div>
-              <div className="mt-1 text-xs font-medium text-white/70">
-                {dict.hero.stats[key]}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <div className="cj-brand-ctas mt-8 flex w-full flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
           <Link
@@ -405,14 +416,16 @@ function BrandScene({
           </a>
         </div>
 
-        <button
-          type="button"
-          onClick={onReviewClick}
-          className="cj-brand-rating mt-5 inline-flex items-center gap-2 text-sm font-medium text-white/80 underline-offset-4 transition hover:text-white hover:underline"
-        >
-          <span className="text-amber-300">★ {averageRating > 0 ? averageRating.toFixed(1) : '۵'}</span>
-          {dict.hero.basedOn.replace('{n}', String(totalReviews))} — {dict.hero.writeReview}
-        </button>
+        {ratingVisible && (
+          <button
+            type="button"
+            onClick={onReviewClick}
+            className="cj-brand-rating mt-5 inline-flex items-center gap-2 text-sm font-medium text-white/80 underline-offset-4 transition hover:text-white hover:underline"
+          >
+            <span className="text-amber-300">★ {stats.rating!.toFixed(1)}</span>
+            {dict.hero.basedOn.replace('{n}', String(stats.reviews ?? 0))} — {dict.hero.writeReview}
+          </button>
+        )}
       </div>
     </div>
   );
