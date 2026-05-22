@@ -18,14 +18,81 @@ export type Topic = {
   group: TopicGroup;
 };
 
-/** Gradient + accent per topic group (matches AlmanYar visual style). */
-export const GROUP_STYLE: Record<TopicGroup, { gradient: string; label: string }> = {
-  visa: { gradient: 'from-blue-600 to-purple-600', label: 'ویزای آلمان' },
-  study: { gradient: 'from-indigo-600 to-cyan-600', label: 'تحصیل در آلمان' },
-  work: { gradient: 'from-emerald-600 to-green-600', label: 'کار در آلمان' },
-  jobs: { gradient: 'from-teal-600 to-emerald-600', label: 'بازار کار آلمان' },
-  life: { gradient: 'from-amber-500 to-orange-600', label: 'زندگی در آلمان' },
-  exams: { gradient: 'from-red-600 to-yellow-500', label: 'آزمون‌های آلمانی' },
+/**
+ * Visual theme per topic group — Part 7 color system.
+ *  - gradient:   hero / card gradient (existing, kept for back-compat)
+ *  - label:      Persian section label
+ *  - soft:       light tinted background for content surfaces
+ *  - accentText: accent text color for headings/links
+ *  - accentBg:   solid accent for numbered steps / markers
+ *  - border:     subtle themed border
+ *  - chip:       small badge background+text
+ */
+export type GroupStyle = {
+  gradient: string;
+  label: string;
+  soft: string;
+  accentText: string;
+  accentBg: string;
+  border: string;
+  chip: string;
+};
+
+export const GROUP_STYLE: Record<TopicGroup, GroupStyle> = {
+  visa: {
+    gradient: 'from-blue-600 to-purple-600',
+    label: 'ویزای آلمان',
+    soft: 'from-blue-50 to-purple-50',
+    accentText: 'text-blue-700',
+    accentBg: 'bg-blue-600',
+    border: 'border-blue-100',
+    chip: 'bg-blue-50 text-blue-700',
+  },
+  study: {
+    gradient: 'from-indigo-600 to-cyan-600',
+    label: 'تحصیل در آلمان',
+    soft: 'from-indigo-50 to-cyan-50',
+    accentText: 'text-indigo-700',
+    accentBg: 'bg-indigo-600',
+    border: 'border-indigo-100',
+    chip: 'bg-indigo-50 text-indigo-700',
+  },
+  work: {
+    gradient: 'from-emerald-600 to-green-600',
+    label: 'کار در آلمان',
+    soft: 'from-emerald-50 to-green-50',
+    accentText: 'text-emerald-700',
+    accentBg: 'bg-emerald-600',
+    border: 'border-emerald-100',
+    chip: 'bg-emerald-50 text-emerald-700',
+  },
+  jobs: {
+    gradient: 'from-teal-600 to-emerald-600',
+    label: 'بازار کار آلمان',
+    soft: 'from-teal-50 to-emerald-50',
+    accentText: 'text-teal-700',
+    accentBg: 'bg-teal-600',
+    border: 'border-teal-100',
+    chip: 'bg-teal-50 text-teal-700',
+  },
+  life: {
+    gradient: 'from-amber-500 to-orange-600',
+    label: 'زندگی در آلمان',
+    soft: 'from-amber-50 to-orange-50',
+    accentText: 'text-orange-700',
+    accentBg: 'bg-orange-500',
+    border: 'border-amber-100',
+    chip: 'bg-amber-50 text-orange-700',
+  },
+  exams: {
+    gradient: 'from-red-600 to-yellow-500',
+    label: 'آزمون‌های آلمانی',
+    soft: 'from-red-50 to-amber-50',
+    accentText: 'text-red-700',
+    accentBg: 'bg-red-600',
+    border: 'border-red-100',
+    chip: 'bg-red-50 text-red-700',
+  },
 };
 
 /** Persian label per top-level route segment (for breadcrumbs). */
