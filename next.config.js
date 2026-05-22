@@ -29,6 +29,22 @@ const securityHeaders = [
     : []),
 ];
 
+// Legacy un-prefixed public marketing routes that have moved under /[locale].
+// 301 (permanent) so search engines transfer link equity.
+const LEGACY_GROUPS = [
+  'germany-visa',
+  'germany-visa-from-turkey',
+  'study-germany',
+  'work-germany',
+  'jobs-germany',
+  'life-germany',
+  'exams',
+  'ausbildung',
+  'germany-embassy',
+  'services',
+  'faq',
+];
+
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
@@ -46,6 +62,12 @@ const nextConfig = {
         headers: securityHeaders,
       },
     ];
+  },
+  async redirects() {
+    return LEGACY_GROUPS.flatMap((group) => [
+      { source: `/${group}`,              destination: `/fa/${group}`,              permanent: true },
+      { source: `/${group}/:slug*`,       destination: `/fa/${group}/:slug*`,       permanent: true },
+    ]);
   },
 };
 

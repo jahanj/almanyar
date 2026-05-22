@@ -68,7 +68,12 @@ export default function PageHero({
                     {crumb.label}
                   </Link>
                 ) : (
-                  <span className={isBrand ? 'text-white/90' : 'text-slate-700'}>{crumb.label}</span>
+                  <span
+                    aria-current="page"
+                    className={isBrand ? 'text-white/90' : 'text-slate-700'}
+                  >
+                    {crumb.label}
+                  </span>
                 )}
               </span>
             ))}

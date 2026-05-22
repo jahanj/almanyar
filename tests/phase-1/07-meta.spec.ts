@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+// Every locale-prefixed page that should ship clean meta.
 const PAGES = [
   '/fa',
   '/fa/guide',
@@ -7,13 +8,13 @@ const PAGES = [
   '/fa/turkey-costs',
   '/fa/turkey-residence',
   '/fa/exams',
-  '/germany-visa',
-  '/germany-visa/visametric',
-  '/germany-visa-from-turkey',
-  '/study-germany',
-  '/work-germany',
-  '/jobs-germany',
-  '/life-germany',
+  '/fa/germany-visa',
+  '/fa/germany-visa/visametric',
+  '/fa/germany-visa-from-turkey',
+  '/fa/study-germany',
+  '/fa/work-germany',
+  '/fa/jobs-germany',
+  '/fa/life-germany',
 ];
 
 function endsMidWord(text: string): boolean {

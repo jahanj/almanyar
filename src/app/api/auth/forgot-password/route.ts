@@ -28,8 +28,9 @@ export async function POST(req: Request) {
       const link = appUrl(`/reset-password?token=${token}`);
       await sendMail({
         to: email,
-        subject: 'بازیابی رمز عبور — مهاجرت آلمان',
+        subject: 'بازیابی رمز عبور — آلمانیار',
         html: `<div dir="rtl" style="font-family:Tahoma,Arial;line-height:1.8">
+          <div style="text-align:center;margin-bottom:16px"><img src="${appUrl('/logo.png')}" alt="AlmanYar" width="200" style="max-width:200px;height:auto"/></div>
           <h2>بازیابی رمز عبور</h2>
           <p>برای تعیین رمز عبور جدید روی لینک زیر کلیک کنید (تا ۱ ساعت معتبر است):</p>
           <p><a href="${link}">${link}</a></p>

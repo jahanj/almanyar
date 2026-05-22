@@ -6,9 +6,8 @@ import { expect, test } from '@playwright/test';
 // has an accordion AND every accordion on every probed page is clean.
 const CANDIDATES = [
   '/fa/germany-visa-from-turkey',
-  '/germany-visa-from-turkey',
-  '/germany-visa/visametric',
   '/fa/germany-visa/visametric',
+  '/fa/germany-visa/requirements',
 ];
 
 test.describe('BUG-04 — FAQ accordion', () => {

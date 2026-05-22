@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getDictionary, localePath } from '@/lib/i18n';
+import { getDictionary, localePath, type Locale } from '@/lib/i18n';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PageHero, { pageCtaPrimary, pageCtaSecondary } from '@/components/PageHero';
 import JsonLd from '@/components/JsonLd';
 import FaqAccordion from '@/components/FaqAccordion';
-import { rootPageMetadata, breadcrumbLd, faqLd, articleLd, localizedUrl, absoluteUrl } from '@/lib/seo';
+import { pageMetadata, breadcrumbLd, faqLd, articleLd, localizedUrl } from '@/lib/seo';
 import { TOPICS, TOPIC_BY_PATH, GROUP_STYLE, SEGMENT_LABEL, type Topic } from '@/lib/germany-topics';
 import { TOPIC_CONTENT } from '@/lib/topic-content';
 import type { TopicContent } from '@/lib/topic-content/types';
 
-type Params = { slug?: string[] };
+type Params = { locale: Locale; slug?: string[] };
 
 const pathFor = (segment: string, slug?: string[]) =>
   '/' + segment + (slug && slug.length ? '/' + slug.join('/') : '');
@@ -32,31 +32,56 @@ function Paragraphs({ body, className }: { body: string; className?: string }) {
 
 export function topicRoute(segment: string) {
   function generateStaticParams() {
-    return TOPICS.filter((t) => t.href.split('/')[1] === segment).map((t) => ({
+    const topicSlugs = TOPICS.filter((t) => t.href.split('/')[1] === segment).map((t) => ({
       slug: t.href.split('/').slice(2),
     }));
+    // Also pre-render the bare segment (group index) if no topic claims it —
+    // this is what the visible breadcrumb middle link points to.
+    const hasBareTopic = !!TOPIC_BY_PATH['/' + segment];
+    return hasBareTopic ? topicSlugs : [...topicSlugs, { slug: [] }];
   }
 
   function generateMetadata({ params }: { params: Params }): Metadata {
     const topic = TOPIC_BY_PATH[pathFor(segment, params.slug)];
-    if (!topic) return {};
+    if (!topic) {
+      // Group-index page (no specific topic). Build a generic metadata block.
+      if (!params.slug || params.slug.length === 0) {
+        const label = SEGMENT_LABEL[segment] ?? segment;
+        return pageMetadata({
+          locale: params.locale,
+          path: '/' + segment,
+          title: `${label} | آلمانیار`,
+          description: `راهنماها و مقاله‌های مرتبط با «${label}» در آلمانیار.`,
+          type: 'website',
+        });
+      }
+      return {};
+    }
     const content = TOPIC_CONTENT[topic.href];
-    // Prefer a richer description from the authored intro when available.
-    // `rootPageMetadata` truncates internally on a whitespace boundary.
     const description = content?.intro ?? topic.desc;
-    return rootPageMetadata({
+    return pageMetadata({
+      locale: params.locale,
       path: topic.href,
       title: `${topic.title} | آلمانیار`,
       description,
+      type: 'article',
     });
   }
 
   async function Page({ params }: { params: Params }) {
     const path = pathFor(segment, params.slug);
     const topic = TOPIC_BY_PATH[path];
-    if (!topic) notFound();
+    if (!topic) {
+      // No specific topic for this bare segment (most groups) — render a group
+      // index that lists every topic in this group. This is what the breadcrumb
+      // middle link points to, so it must always exist.
+      if (!params.slug || params.slug.length === 0) {
+        return groupIndexPage(segment, params.locale);
+      }
+      notFound();
+    }
 
-    const locale = 'fa' as const;
+    const locale = params.locale;
     const dict = await getDictionary(locale);
     const style = GROUP_STYLE[topic.group];
     const segLabel = SEGMENT_LABEL[segment] ?? style.label;
@@ -72,8 +97,8 @@ export function topicRoute(segment: string) {
     const jsonLd: object[] = [
       breadcrumbLd([
         { name: 'خانه', url: localizedUrl(locale) },
-        { name: segLabel, url: absoluteUrl('/' + segment) },
-        { name: topic.title, url: absoluteUrl(topic.href) },
+        { name: segLabel, url: localizedUrl(locale, '/' + segment) },
+        { name: topic.title, url: localizedUrl(locale, topic.href) },
       ]),
       articleLd({
         locale,
@@ -252,7 +277,7 @@ export function topicRoute(segment: string) {
                 {related.map((r) => (
                   <Link
                     key={r.href}
-                    href={r.href}
+                    href={localePath(locale, r.href)}
                     aria-label={r.title}
                     className={`card-hover flex items-start gap-3 rounded-2xl border ${style.border} bg-white p-4 shadow-soft transition`}
                   >
@@ -279,7 +304,7 @@ export function topicRoute(segment: string) {
                   return (
                     <Link
                       key={r.href}
-                      href={r.href}
+                      href={localePath(locale, r.href)}
                       aria-label={r.title}
                       className="group relative overflow-hidden rounded-2xl border border-white/10 p-5 text-white shadow-soft transition hover:-translate-y-0.5 hover:shadow-card"
                     >
@@ -301,4 +326,60 @@ export function topicRoute(segment: string) {
   }
 
   return { generateStaticParams, generateMetadata, Page };
+}
+
+/** Group-index landing page used when /fa/<segment> has no specific topic. */
+async function groupIndexPage(segment: string, locale: Locale) {
+  const dict = await getDictionary(locale);
+  const segLabel = SEGMENT_LABEL[segment] ?? segment;
+  const topicsInGroup = TOPICS.filter((t) => t.href.split('/')[1] === segment);
+  const style = topicsInGroup[0] ? GROUP_STYLE[topicsInGroup[0].group] : GROUP_STYLE.visa;
+
+  const jsonLd = breadcrumbLd([
+    { name: 'خانه', url: localizedUrl(locale) },
+    { name: segLabel, url: localizedUrl(locale, '/' + segment) },
+  ]);
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <JsonLd data={[jsonLd]} />
+      <Header dict={dict} locale={locale} />
+
+      <PageHero
+        locale={locale}
+        eyebrow={segLabel}
+        title={segLabel}
+        subtitle="موضوعات این بخش را در ادامه ببینید."
+        accentGradient={style.gradient}
+        breadcrumbs={[
+          { label: 'خانه', href: localePath(locale) },
+          { label: segLabel },
+        ]}
+      >
+        {pageCtaPrimary(localePath(locale, '/evaluation'), 'فرم ارزیابی رایگان')}
+        {pageCtaSecondary(localePath(locale, '#contact'), 'مشاوره و تماس')}
+      </PageHero>
+
+      <main className="container mx-auto max-w-4xl px-4 py-12 sm:px-6">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {topicsInGroup.map((t) => (
+            <Link
+              key={t.href}
+              href={localePath(locale, t.href)}
+              aria-label={t.title}
+              className={`card-hover flex items-start gap-3 rounded-2xl border ${style.border} bg-white p-4 shadow-soft transition`}
+            >
+              <span className="text-2xl">{t.icon}</span>
+              <span>
+                <span className="block text-sm font-semibold text-slate-900">{t.title}</span>
+                <span className="mt-0.5 block text-xs leading-6 text-slate-500">{t.desc}</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </main>
+
+      <Footer dict={dict} locale={locale} />
+    </div>
+  );
 }
