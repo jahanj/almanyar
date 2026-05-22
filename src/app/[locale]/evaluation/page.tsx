@@ -12,7 +12,7 @@ import { PAGE_SEO } from '@/lib/seo-content';
 
 export function generateMetadata(): Metadata {
   const s = PAGE_SEO.evaluation;
-  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description, keywords: s.keywords });
+  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description });
 }
 
 export default async function EvaluationPage({ params }: { params: { locale: Locale } }) {

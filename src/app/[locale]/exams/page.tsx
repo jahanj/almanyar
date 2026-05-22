@@ -15,7 +15,7 @@ import { examGroups, examSteps, examFaq } from '@/lib/exams-data';
 
 export function generateMetadata(): Metadata {
   const s = PAGE_SEO.exams;
-  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description, keywords: s.keywords });
+  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description });
 }
 
 const accentMap: Record<string, { border: string; chip: string; ring: string }> = {

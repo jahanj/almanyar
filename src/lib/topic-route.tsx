@@ -42,9 +42,8 @@ export function topicRoute(segment: string) {
     if (!topic) return {};
     const content = TOPIC_CONTENT[topic.href];
     // Prefer a richer description from the authored intro when available.
-    const description = content?.intro
-      ? content.intro.replace(/\s+/g, ' ').slice(0, 160)
-      : topic.desc;
+    // `rootPageMetadata` truncates internally on a whitespace boundary.
+    const description = content?.intro ?? topic.desc;
     return rootPageMetadata({
       path: topic.href,
       title: `${topic.title} | آلمانیار`,

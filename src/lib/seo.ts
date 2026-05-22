@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { locales, defaultLocale, type Locale } from './i18n';
+import { truncateDescription } from './truncate';
 
 /**
  * Central SEO configuration and helpers.
@@ -24,7 +25,7 @@ export const SITE = {
     'https://instagram.com/almanyar',
     'https://t.me/almanyar',
   ],
-  phone: '+90 555 000 0000',
+  phone: '+90 506 770 8295',
   email: 'info@almanyar.com',
 } as const;
 
@@ -59,7 +60,6 @@ type PageMetaInput = {
   path?: string;
   title: string;
   description: string;
-  keywords?: string[];
   /** 'website' (default) or 'article'. */
   type?: 'website' | 'article';
   /** Override the share image (absolute path under /public). */
@@ -70,17 +70,20 @@ type PageMetaInput = {
 
 /**
  * Builds a complete, consistent Next.js Metadata object for a page:
- * title, description, keywords, canonical, hreflang alternates, Open Graph and Twitter cards.
+ * title, description, canonical, hreflang alternates, Open Graph and Twitter cards.
+ *
+ * Intentionally does not emit a `keywords` field: Google deprecated the
+ * `<meta name="keywords">` signal in 2009 and the other major engines followed.
  */
 export function pageMetadata(input: PageMetaInput): Metadata {
-  const { locale, path = '', title, description, keywords, type = 'website', image, noindex } = input;
+  const { locale, path = '', title, description, type = 'website', image, noindex } = input;
+  const safeDescription = truncateDescription(description);
   const canonical = localizedUrl(locale, path);
   const ogImage = absoluteUrl(image ?? SITE.ogImage);
 
   return {
     title,
-    description,
-    keywords,
+    description: safeDescription,
     alternates: {
       canonical,
       languages: languageAlternates(path),
@@ -97,7 +100,7 @@ export function pageMetadata(input: PageMetaInput): Metadata {
       url: canonical,
       siteName: SITE.name,
       title,
-      description,
+      description: safeDescription,
       locale: OG_LOCALE[locale],
       alternateLocale: locales.filter((l) => l !== locale).map((l) => OG_LOCALE[l]),
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
@@ -105,7 +108,7 @@ export function pageMetadata(input: PageMetaInput): Metadata {
     twitter: {
       card: 'summary_large_image',
       title,
-      description,
+      description: safeDescription,
       images: [ogImage],
       site: SITE.twitter,
     },
@@ -115,21 +118,24 @@ export function pageMetadata(input: PageMetaInput): Metadata {
 /**
  * Metadata for ROOT-level SEO landing pages (e.g. /germany-visa) that live
  * outside the /fa locale segment. Canonical points at the bare path.
+ *
+ * Kept for the (shrinking) set of pages still served from the root path during
+ * the BUG-01 migration. Once those pages move under /[locale], delete this and
+ * call `pageMetadata` everywhere.
  */
 export function rootPageMetadata(input: {
   path: string;
   title: string;
   description: string;
-  keywords?: string[];
   type?: 'website' | 'article';
 }): Metadata {
-  const { path, title, description, keywords, type = 'article' } = input;
+  const { path, title, description, type = 'article' } = input;
+  const safeDescription = truncateDescription(description);
   const canonical = absoluteUrl(path);
   const ogImage = absoluteUrl(SITE.ogImage);
   return {
     title,
-    description,
-    keywords,
+    description: safeDescription,
     alternates: { canonical },
     robots: {
       index: true,
@@ -141,11 +147,11 @@ export function rootPageMetadata(input: {
       url: canonical,
       siteName: SITE.name,
       title,
-      description,
+      description: safeDescription,
       locale: 'fa_IR',
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
     },
-    twitter: { card: 'summary_large_image', title, description, images: [ogImage], site: SITE.twitter },
+    twitter: { card: 'summary_large_image', title, description: safeDescription, images: [ogImage], site: SITE.twitter },
   };
 }
 

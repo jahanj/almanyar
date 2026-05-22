@@ -196,7 +196,6 @@ export function generateMetadata(): Metadata {
   return {
     title: seo.title,
     description: seo.description,
-    keywords: seo.keywords,
     alternates: {
       canonical,
       languages: {

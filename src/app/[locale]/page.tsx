@@ -49,7 +49,7 @@ function loadHomepageReviews() {
 
 export function generateMetadata(): Metadata {
   const s = PAGE_SEO.home;
-  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description, keywords: s.keywords });
+  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description });
 }
 
 export default async function Home({ params }: { params: { locale: Locale } }) {

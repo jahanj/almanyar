@@ -1,8 +1,15 @@
 /**
- * Per-page SEO copy (Persian). Centralized so titles/descriptions/keywords are
- * editable in one place and reused by each page's generateMetadata via pageMetadata().
+ * Per-page SEO copy (Persian). Centralized so titles/descriptions are
+ * editable in one place and reused by each page's generateMetadata via
+ * pageMetadata().
  *
- * Keep titles ≤ ~60 chars and descriptions ~150–160 chars for clean SERP display.
+ * Keep titles ≤ ~60 chars and descriptions ≤ 155 chars for clean SERP display.
+ * `pageMetadata` will whitespace-truncate any oversize description at runtime,
+ * but the source should be authored to fit naturally.
+ *
+ * `<meta name="keywords">` is intentionally NOT emitted — Google deprecated the
+ * signal in 2009 and the other major engines ignore it. Topical relevance is
+ * established by the actual page body + title + description.
  */
 
 export type PageSeo = {
@@ -10,18 +17,7 @@ export type PageSeo = {
   path: string;
   title: string;
   description: string;
-  keywords: string[];
 };
-
-// Brand-wide keyword pool for Persian "study migration to Germany" intent.
-const BASE_KEYWORDS = [
-  'مهاجرت تحصیلی به آلمان',
-  'تحصیل در آلمان',
-  'اقامت تحصیلی آلمان',
-  'ویزای تحصیلی آلمان',
-  'مهاجرت به آلمان از ترکیه',
-  'آلمانیار',
-];
 
 export const PAGE_SEO = {
   home: {
@@ -29,109 +25,41 @@ export const PAGE_SEO = {
     title: 'مهاجرت تحصیلی به آلمان از ترکیه | آلمانیار',
     description:
       'آلمانیار، مشاور تخصصی مهاجرت تحصیلی به آلمان از مسیر ترکیه: انتخاب دانشگاه، ثبت‌نام آزمون گوته و telc، پذیرش، ویزای دانشجویی، اسکان و استقرار.',
-    keywords: [
-      ...BASE_KEYWORDS,
-      'تحصیل رایگان آلمان',
-      'اقامت تحصیلی ترکیه',
-      'انتخاب دانشگاه آلمان',
-      'مشاوره مهاجرت آلمان',
-      'ثبت‌نام آزمون گوته',
-      'ثبت‌نام آزمون telc',
-      'ثبت‌نام TestDaF',
-      'ثبت‌نام TestAS',
-      'آزمون زبان آلمانی در ترکیه',
-      'هزینه آزمون گوته',
-      'هزینه آزمون telc',
-    ],
   },
   guide: {
     path: '/guide',
     title: 'راهنمای جامع تحصیل در آلمان ۲۰۲۵ | آلمانیار',
     description:
       'راهنمای کامل تحصیل در آلمان: مقاطع و دانشگاه‌ها، مدارک لازم، مراحل اقدام، نمره زبان، هزینه‌ها، تحصیل رایگان، بورسیه DAAD، کار حین تحصیل و سوالات متداول.',
-    keywords: [
-      ...BASE_KEYWORDS,
-      'راهنمای تحصیل در آلمان',
-      'تحصیل رایگان در آلمان',
-      'مدارک ویزای تحصیلی آلمان',
-      'بورسیه DAAD',
-      'کالج Studienkolleg',
-      'بلوکد اکانت آلمان',
-      'هزینه تحصیل در آلمان',
-    ],
   },
   turkeyResidence: {
     path: '/turkey-residence',
     title: 'اقامت تحصیلی ترکیه؛ مسیر ورود به آلمان | آلمانیار',
     description:
       'اقامت تحصیلی ترکیه به‌عنوان پلی مطمئن برای مهاجرت تحصیلی به آلمان: شرایط، مدارک، هزینه‌ها و مراحل اخذ اقامت دانشجویی ترکیه.',
-    keywords: [
-      ...BASE_KEYWORDS,
-      'اقامت تحصیلی ترکیه',
-      'اقامت دانشجویی ترکیه',
-      'مهاجرت از ترکیه به آلمان',
-      'تحصیل در ترکیه',
-    ],
   },
   turkeyCosts: {
     path: '/turkey-costs',
     title: 'هزینه‌های زندگی و تحصیل در ترکیه | آلمانیار',
     description:
       'بررسی کامل هزینه‌های زندگی، مسکن، تحصیل و اقامت در ترکیه برای دانشجویان ایرانی در مسیر مهاجرت تحصیلی به آلمان.',
-    keywords: [
-      ...BASE_KEYWORDS,
-      'هزینه زندگی در ترکیه',
-      'هزینه تحصیل در ترکیه',
-      'هزینه اقامت ترکیه',
-    ],
   },
   exams: {
     path: '/exams',
     title: 'ثبت‌نام آزمون گوته، telc و TestDaF در ترکیه | آلمانیار',
     description:
-      'خدمات ثبت‌نام آزمون‌های زبان آلمانی (گوته، telc، TestDaF، TestAS، DSH و ÖSD) در ترکیه و آلمان: یافتن تاریخ و مرکز، رزرو صندلی، کمک در پرداخت و پشتیبانی کامل. هزینه آزمون گوته و telc.',
-    keywords: [
-      ...BASE_KEYWORDS,
-      'ثبت نام آزمون گوته',
-      'ثبت نام telc آلمان',
-      'هزینه آزمون گوته در ترکیه',
-      'ثبت نام TestDaF',
-      'آزمون زبان آلمانی',
-      'آزمون گوته استانبول',
-      'ثبت نام آزمون آلمانی',
-      'آزمون زبان برای مهاجرت آلمان',
-      'هزینه آزمون telc',
-      'آزمون ÖSD',
-    ],
+      'خدمات ثبت‌نام آزمون‌های زبان آلمانی (گوته، telc، TestDaF، TestAS، DSH و ÖSD) در ترکیه و آلمان: یافتن تاریخ و مرکز، رزرو صندلی و پشتیبانی کامل.',
   },
   germanyVisaFromTurkey: {
     path: '/germany-visa-from-turkey',
     title: 'ویزای آلمان از ترکیه برای ایرانیان | شرایط، مدارک و هزینه‌ها',
     description:
-      'راهنمای کامل درخواست ویزای آلمان از ترکیه برای ایرانیان؛ شرایط اقامت ترکیه، مدارک لازم، هزینه‌ها، وقت سفارت، iDATA و انواع ویزای تحصیلی، کاری، آوسبیلدونگ و پیوست.',
-    keywords: [
-      ...BASE_KEYWORDS,
-      'ویزای آلمان از ترکیه',
-      'درخواست ویزای آلمان از ترکیه',
-      'ویزای تحصیلی آلمان از ترکیه',
-      'ویزای کاری آلمان از ترکیه',
-      'وقت سفارت آلمان در ترکیه',
-      'iDATA ترکیه',
-      'اقامت ترکیه برای ویزای آلمان',
-      'ویزای آوسبیلدونگ آلمان از ترکیه',
-      'کارت شانس آلمان از ترکیه',
-    ],
+      'راهنمای کامل درخواست ویزای آلمان از ترکیه برای ایرانیان: شرایط اقامت ترکیه، مدارک لازم، هزینه‌ها، وقت سفارت، iDATA و انواع ویزای تحصیلی و کاری.',
   },
   evaluation: {
     path: '/evaluation',
     title: 'فرم ارزیابی رایگان مهاجرت تحصیلی به آلمان | آلمانیار',
     description:
       'شرایط مهاجرت تحصیلی خود به آلمان را رایگان ارزیابی کنید. فرم ارزیابی آلمانیار شانس پذیرش و بهترین مسیر شما را مشخص می‌کند.',
-    keywords: [
-      ...BASE_KEYWORDS,
-      'ارزیابی مهاجرت تحصیلی',
-      'فرم ارزیابی رایگان آلمان',
-      'شرایط مهاجرت تحصیلی آلمان',
-    ],
   },
 } satisfies Record<string, PageSeo>;

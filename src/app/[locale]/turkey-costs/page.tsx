@@ -18,7 +18,7 @@ import {
 
 export function generateMetadata(): Metadata {
   const s = PAGE_SEO.turkeyCosts;
-  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description, keywords: s.keywords, type: 'article' });
+  return pageMetadata({ locale: 'fa', path: s.path, title: s.title, description: s.description, type: 'article' });
 }
 
 type Table = { headers: string[]; rows: string[][]; caption?: string };

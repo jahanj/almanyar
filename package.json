@@ -13,7 +13,8 @@
     "prisma:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "test": "playwright test",
-    "test:phase-1": "playwright test tests/phase-1"
+    "test:phase-1": "playwright test tests/phase-1",
+    "audit:meta": "tsx scripts/audit-meta.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
