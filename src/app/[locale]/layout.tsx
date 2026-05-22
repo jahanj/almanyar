@@ -3,6 +3,7 @@ import { locales, isRtl, type Locale, getDictionary } from '@/lib/i18n';
 import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CookieNotice from '@/components/legal/CookieNotice';
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -39,6 +40,7 @@ export default async function LocaleLayout({
       <Header dict={dict} locale={params.locale} />
       {children}
       <Footer dict={dict} locale={params.locale} />
+      <CookieNotice locale={params.locale} />
     </div>
   );
 }
