@@ -29,7 +29,9 @@ services:
       # Gates SEO-sensitive behavior (robots.txt indexability, optional
       # analytics). Must be exactly "production" on the live site or the
       # robots.txt fail-safe will return Disallow: / for everything.
-      NEXT_PUBLIC_ENV: ${NEXT_PUBLIC_ENV:-production}
+      # Server-side only (not NEXT_PUBLIC_*) so it's a true runtime env,
+      # not inlined into the build bundle by webpack.
+      APP_ENV: ${APP_ENV:-production}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       ADMIN_EMAIL: ${ADMIN_EMAIL}

@@ -11,9 +11,14 @@ import { SITE } from '@/lib/seo';
  * The gate uses `!== 'production'` (not `=== 'staging'`) — that way any
  * unset / mistyped env defaults to the safe path. See PHASE-2-PLAN §2.5
  * and decision D.
+ *
+ * Uses `APP_ENV` (not `NEXT_PUBLIC_ENV`) so Next doesn't inline the value
+ * at build time. `NEXT_PUBLIC_*` vars are baked into the bundle by webpack
+ * — passing them via docker-compose `environment:` at runtime does nothing.
+ * robots.ts is a server-side route, so a non-public var is correct.
  */
 export default function robots(): MetadataRoute.Robots {
-  const isProduction = process.env.NEXT_PUBLIC_ENV === 'production';
+  const isProduction = process.env.APP_ENV === 'production';
 
   if (!isProduction) {
     return {

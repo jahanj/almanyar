@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 /**
  * SEO-05 — robots.txt
  *
- * The Playwright dev server runs with NEXT_PUBLIC_ENV unset (the spec gate
+ * The Playwright dev server runs with APP_ENV unset (the spec gate
  * is `=== 'production'`, so unset is treated as non-production = staging /
  * preview). We assert the safe-by-default Disallow-everything shape here.
  *
