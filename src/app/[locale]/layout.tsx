@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieNotice from '@/components/legal/CookieNotice';
+import WhatsAppButton from '@/components/contact/WhatsAppButton';
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -41,6 +42,8 @@ export default async function LocaleLayout({
       {children}
       <Footer dict={dict} locale={params.locale} />
       <CookieNotice locale={params.locale} />
+      {/* Floating WhatsApp CTA — TRUST-08. z-index 40 sits below cookie notice. */}
+      <WhatsAppButton />
     </div>
   );
 }
