@@ -446,8 +446,8 @@ function Captions() {
         <CaptionBlock
           id="iran"
           eyebrow="📍 ایران"
-          title="هر مسیر بزرگی، از یک تصمیم شروع می‌شود"
-          subtitle="همه‌چیز با یک رؤیا آغاز می‌شود؛ رؤیای ساختن آینده‌ای تازه در آلمان."
+          title="مهاجرت تحصیلی به آلمان از ترکیه"
+          subtitle="سفارت آلمان در تهران غیرقابل پیش‌بینی است. مسیر امن از ترکیه شروع می‌شود — ۶ ماه آماده‌سازی، اقامت دانشجویی، سفارت قابل دسترس."
         />
         <CaptionBlock
           id="flight"
@@ -527,9 +527,9 @@ function StaticFallback({ props }: { props: Props }) {
         <div className="relative z-30 mx-auto max-w-3xl px-5 text-center">
           <Chip tone="dark">📍 ایران</Chip>
           <h2 className="mt-5 text-3xl font-extrabold leading-[1.2] sm:text-4xl">
-            هر مسیر بزرگی، از یک تصمیم شروع می‌شود
+            مهاجرت تحصیلی به آلمان از ترکیه
           </h2>
-          <p className="mt-4 text-white/80">رؤیای ساختن آینده‌ای تازه در آلمان، از همین‌جا آغاز می‌شود.</p>
+          <p className="mt-4 text-white/80">سفارت آلمان در تهران غیرقابل پیش‌بینی است. مسیر امن از ترکیه شروع می‌شود — ۶ ماه آماده‌سازی، اقامت دانشجویی، سفارت قابل دسترس.</p>
         </div>
       </div>
       <div className="relative min-h-[80vh] w-full overflow-hidden bg-[#5a0e12] py-16 text-white">
