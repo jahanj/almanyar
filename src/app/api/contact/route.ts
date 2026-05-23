@@ -62,6 +62,15 @@ export async function POST(req: Request) {
       );
     }
 
+    // TRUST-10 — Germany-risk acknowledgement is required on every new
+    // submission. Old rows stay NULL (the schema column is nullable).
+    if (parsed.data.consent.germanyRiskAcknowledged !== true) {
+      return NextResponse.json(
+        { error: 'برای ارسال فرم، تایید سلب مسئولیت مسیر آلمان لازم است.' },
+        { status: 400 }
+      );
+    }
+
     const { website: _hp, consent, ...contactData } = parsed.data;
     const consentMeta = extractClientMeta(req.headers);
     const request = await prisma.contactRequest.create({

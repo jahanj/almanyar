@@ -34,6 +34,8 @@ type FormState = {
   // LEGAL-04 — consent record.
   termsAccepted: boolean;
   marketingConsent: boolean;
+  // TRUST-10 — Germany-side outcomes not guaranteed.
+  germanyRiskAcknowledged: boolean;
 };
 
 const initialFormState: FormState = {
@@ -48,6 +50,7 @@ const initialFormState: FormState = {
   confirmed: false,
   termsAccepted: false,
   marketingConsent: false,
+  germanyRiskAcknowledged: false,
 };
 
 const cardButtonBase =
@@ -136,6 +139,10 @@ export default function ContactForm({ dict }: { dict: Dictionary }) {
       setErr('برای ارسال فرم، موافقت با حریم خصوصی و سلب مسئولیت لازم است.');
       return;
     }
+    if (!form.germanyRiskAcknowledged) {
+      setErr('برای ارسال فرم، تایید سلب مسئولیت مسیر آلمان لازم است.');
+      return;
+    }
 
     setLoading(true);
 
@@ -156,6 +163,7 @@ export default function ContactForm({ dict }: { dict: Dictionary }) {
         consent: {
           termsAccepted: form.termsAccepted,
           marketingConsent: form.marketingConsent,
+          germanyRiskAcknowledged: form.germanyRiskAcknowledged,
         },
       };
 
@@ -429,6 +437,23 @@ export default function ContactForm({ dict }: { dict: Dictionary }) {
                           و{' '}
                           <a href="/fa/disclaimer" target="_blank" rel="noopener" className="text-brand-700 underline-offset-2 hover:underline">سلب مسئولیت</a>{' '}
                           موافقم <span className="text-red-500">*</span>
+                        </span>
+                      </label>
+                      {/* TRUST-10 — Germany-side outcomes acknowledgement. Required. */}
+                      <label
+                        className="mt-3 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50/60 p-4 text-sm font-medium text-amber-950"
+                        data-testid="contact-germany-risk-wrap"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={form.germanyRiskAcknowledged}
+                          onChange={(event) => setForm((current) => ({ ...current, germanyRiskAcknowledged: event.target.checked }))}
+                          className="mt-1 h-5 w-5 rounded border-amber-500 text-amber-900 focus:ring-amber-700"
+                          data-testid="contact-germany-risk"
+                        />
+                        <span>
+                          متوجه شدم که موفقیت در مسیر ویزا و پذیرش دانشگاه‌های آلمان به عوامل خارج از کنترل آلمانیار (مانند تصمیم سفارت آلمان، دانشگاه‌ها، و مراکز آزمون) بستگی دارد و آلمانیار این بخش از مسیر را تضمین نمی‌کند.
+                          <span className="text-red-500"> *</span>
                         </span>
                       </label>
                       <label

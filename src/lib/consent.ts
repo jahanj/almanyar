@@ -6,15 +6,24 @@ import { TERMS_VERSION } from '@/config/legal';
  * submission (Evaluation, ContactRequest) so we can later prove which
  * terms version the user agreed to.
  *
- * - termsAccepted: REQUIRED. Form must block submission if false.
- * - marketingConsent: OPTIONAL (visible-but-unchecked per GDPR norm).
+ * - termsAccepted:            REQUIRED. Form must block submission if false.
+ * - germanyRiskAcknowledged:  REQUIRED (TRUST-10). Explicit acknowledgement
+ *                             that German-side outcomes are outside our control.
+ * - marketingConsent:         OPTIONAL (visible-but-unchecked per GDPR norm).
  */
 export const ConsentInputSchema = z.object({
   termsAccepted: z.boolean(),
+  germanyRiskAcknowledged: z.boolean(),
   marketingConsent: z.boolean().optional(),
 });
 
 export type ConsentInput = z.infer<typeof ConsentInputSchema>;
+
+/** Persian wording for the Germany-risk checkbox label. Lives here so
+ *  the eval form, the contact form, and the API rejection message
+ *  read from the same string. */
+export const GERMANY_RISK_LABEL =
+  'متوجه شدم که موفقیت در مسیر ویزا و پذیرش دانشگاه‌های آلمان به عوامل خارج از کنترل آلمانیار (مانند تصمیم سفارت آلمان، دانشگاه‌ها، و مراکز آزمون) بستگی دارد و آلمانیار این بخش از مسیر را تضمین نمی‌کند.';
 
 /** Reads client IP + user-agent from the request headers (nginx sets
  *  X-Forwarded-For + X-Real-IP; falls back to whatever's present). */
@@ -39,13 +48,18 @@ export function consentDbFields(
       consentIp: null,
       consentUserAgent: null,
       marketingConsent: null,
+      germanyRiskAcknowledged: null,
+      germanyRiskAcknowledgedAt: null,
     };
   }
+  const now = new Date();
   return {
-    consentAcceptedAt: new Date(),
+    consentAcceptedAt: now,
     consentTermsVersion: TERMS_VERSION,
     consentIp: meta.ip,
     consentUserAgent: meta.userAgent,
     marketingConsent: input.marketingConsent ?? false,
+    germanyRiskAcknowledged: input.germanyRiskAcknowledged === true,
+    germanyRiskAcknowledgedAt: input.germanyRiskAcknowledged === true ? now : null,
   };
 }

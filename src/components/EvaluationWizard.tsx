@@ -42,6 +42,8 @@ type FormState = {
   // LEGAL-04 — consent record.
   termsAccepted: boolean;
   marketingConsent: boolean;
+  // TRUST-10
+  germanyRiskAcknowledged: boolean;
 };
 
 const initialState: FormState = {
@@ -53,7 +55,7 @@ const initialState: FormState = {
   bachelorField: '', bachelorGpa: '', targetDegree: '', targetPreferences: [],
   jobTitle: '', workExperienceYears: '', currentlyEmployed: false,
   howFoundUs: '', referralCode: '', description: '',
-  termsAccepted: false, marketingConsent: false,
+  termsAccepted: false, marketingConsent: false, germanyRiskAcknowledged: false,
 };
 
 const STEPS = [
@@ -156,10 +158,14 @@ export default function EvaluationWizard() {
       setError('برای ارسال فرم، موافقت با حریم خصوصی و سلب مسئولیت لازم است.');
       return;
     }
+    if (!form.germanyRiskAcknowledged) {
+      setError('برای ارسال فرم، تایید سلب مسئولیت مسیر آلمان لازم است.');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const { termsAccepted, marketingConsent, ...rest } = form;
+      const { termsAccepted, marketingConsent, germanyRiskAcknowledged, ...rest } = form;
       const payload = {
         ...rest,
         country: form.country || null,
@@ -184,7 +190,7 @@ export default function EvaluationWizard() {
         howFoundUs: form.howFoundUs || null,
         referralCode: form.referralCode || null,
         description: form.description || null,
-        consent: { termsAccepted, marketingConsent },
+        consent: { termsAccepted, marketingConsent, germanyRiskAcknowledged },
       };
       const res = await fetch('/api/evaluation', {
         method: 'POST',
@@ -516,6 +522,23 @@ export default function EvaluationWizard() {
                 و{' '}
                 <a href="/fa/disclaimer" target="_blank" rel="noopener" className="text-brand-700 underline-offset-2 hover:underline">سلب مسئولیت</a>{' '}
                 موافقم <span className="text-red-500">*</span>
+              </span>
+            </label>
+            {/* TRUST-10 — Germany-side outcomes acknowledgement. Required. */}
+            <label
+              className="flex items-start gap-3 cursor-pointer rounded-lg border border-amber-300 bg-amber-50/60 p-3"
+              data-testid="eval-germany-risk-wrap"
+            >
+              <input
+                type="checkbox"
+                className="mt-1.5"
+                checked={form.germanyRiskAcknowledged}
+                onChange={(e) => set('germanyRiskAcknowledged', e.target.checked)}
+                data-testid="eval-germany-risk"
+              />
+              <span className="text-sm leading-7 text-amber-950">
+                متوجه شدم که موفقیت در مسیر ویزا و پذیرش دانشگاه‌های آلمان به عوامل خارج از کنترل آلمانیار (مانند تصمیم سفارت آلمان، دانشگاه‌ها، و مراکز آزمون) بستگی دارد و آلمانیار این بخش از مسیر را تضمین نمی‌کند.
+                <span className="text-red-500"> *</span>
               </span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer" data-testid="eval-marketing-wrap">

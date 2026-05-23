@@ -188,6 +188,13 @@ model ContactRequest {
   consentUserAgent    String?
   marketingConsent    Boolean?
 
+  // TRUST-10 — explicit acknowledgement that German-side outcomes
+  // (embassy, university, exam-center decisions) are out of Almanyar's
+  // control. Required on new submissions; nullable so historical rows
+  // stay valid.
+  germanyRiskAcknowledged   Boolean?
+  germanyRiskAcknowledgedAt DateTime?
+
   user        User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([status])
@@ -254,6 +261,13 @@ model Evaluation {
   consentIp           String?
   consentUserAgent    String?
   marketingConsent    Boolean?
+
+  // TRUST-10 — explicit acknowledgement that German-side outcomes
+  // (embassy, university, exam-center decisions) are out of Almanyar's
+  // control. Required on new submissions; nullable so historical rows
+  // stay valid.
+  germanyRiskAcknowledged   Boolean?
+  germanyRiskAcknowledgedAt DateTime?
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
