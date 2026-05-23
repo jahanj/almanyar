@@ -291,13 +291,13 @@ export default function EvaluationWizard() {
           <Section title="مشخصات تماس">
             <Grid>
               <Field label="تلفن همراه" required>
-                <input className={inp} value={form.mobile} onChange={(e) => set('mobile', e.target.value)} />
+                <input data-testid="eval-mobile" className={inp} value={form.mobile} onChange={(e) => set('mobile', e.target.value)} />
               </Field>
               <Field label="تلفن ثابت">
                 <input className={inp} value={form.phone} onChange={(e) => set('phone', e.target.value)} />
               </Field>
               <Field label="ایمیل" required>
-                <input type="email" className={inp} value={form.email} onChange={(e) => set('email', e.target.value)} />
+                <input data-testid="eval-email" type="email" className={inp} value={form.email} onChange={(e) => set('email', e.target.value)} />
               </Field>
               <Field label="کشور محل اقامت" required>
                 <select

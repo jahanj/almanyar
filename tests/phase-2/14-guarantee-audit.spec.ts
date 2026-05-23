@@ -57,6 +57,16 @@ const ALLOW_LIST: Array<{ file: string; substring: string; reason: string }> = [
     substring: 'آنچه تضمین نمی‌کنیم',
     reason: 'Disclaimer meta description — "what we DO NOT guarantee".',
   },
+  {
+    file: 'src/components/EvaluationWizard.tsx',
+    substring: 'این بخش از مسیر را تضمین نمی‌کند',
+    reason: 'TRUST-10 — explicit "we do NOT guarantee" Germany-risk consent checkbox.',
+  },
+  {
+    file: 'src/components/ContactForm.tsx',
+    substring: 'این بخش از مسیر را تضمین نمی‌کند',
+    reason: 'TRUST-10 — explicit "we do NOT guarantee" Germany-risk consent checkbox.',
+  },
 ];
 
 function grepOccurrences(pattern: string): Array<{ file: string; line: number; text: string }> {
