@@ -74,6 +74,15 @@ export default async function HowItWorksPage({ params }: { params: { locale: Loc
                   ))}
                 </ul>
               ) : null}
+              {('callout' in s && s.callout) ? (
+                <aside
+                  data-testid="step-callout"
+                  className="mt-5 rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-sm leading-7 text-amber-900"
+                >
+                  <p className="font-semibold">{s.callout.heading}</p>
+                  <p className="mt-1.5">{s.callout.body}</p>
+                </aside>
+              ) : null}
             </li>
           ))}
         </ol>
