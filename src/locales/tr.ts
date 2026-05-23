@@ -24,6 +24,7 @@ const tr: FaDict = {
     evaluation: 'Ücretsiz Değerlendirme',
     more: 'Daha fazla',
     howItWorks: 'Nasıl çalışıyoruz',
+    about: 'Hakkımızda',
   },
   hero: {
     title: 'Türkiye Üzerinden Almanya\'ya Eğitim Göçü',

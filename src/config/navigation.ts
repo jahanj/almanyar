@@ -6,7 +6,7 @@
  * `path` is the locale-relative path; `hash` is an in-page anchor that lives
  * on the homepage (Header turns it into `/<locale>#…`).
  */
-export type NavKey = 'services' | 'process' | 'guide' | 'turkey' | 'contact' | 'howItWorks';
+export type NavKey = 'services' | 'process' | 'guide' | 'turkey' | 'contact' | 'howItWorks' | 'about';
 
 export type NavItem =
   | { dictKey: NavKey; hash: string; path?: never }
@@ -14,6 +14,7 @@ export type NavItem =
 
 export const PRIMARY_NAV: NavItem[] = [
   { dictKey: 'howItWorks', path: '/how-it-works' },
+  { dictKey: 'about', path: '/about' },
   { dictKey: 'services', hash: '#services' },
   { dictKey: 'guide', path: '/guide' },
   { dictKey: 'turkey', path: '/turkey-residence' },

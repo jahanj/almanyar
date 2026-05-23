@@ -24,6 +24,7 @@ const de: FaDict = {
     evaluation: 'Kostenlose Bewertung',
     more: 'Mehr',
     howItWorks: 'So arbeiten wir',
+    about: 'Über uns',
   },
   hero: {
     title: 'Studienmigration nach Deutschland über die Türkei',
