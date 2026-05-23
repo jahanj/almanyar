@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { locales, defaultLocale, type Locale } from './i18n';
 import { truncateDescription } from './truncate';
+import { OWNER, OWNER_PHOTO_URL } from './owner';
 
 /**
  * Central SEO configuration and helpers.
@@ -20,11 +21,10 @@ export const SITE = {
   // Logos / default share image live in /public.
   logo: '/logo.png',
   ogImage: '/og.png',
-  // Public social profiles — used for Person `sameAs`. Add real URLs as they go live.
-  social: [
-    'https://instagram.com/almanyar',
-    'https://t.me/almanyar',
-  ],
+  // Public social profiles — empty until owner activates real channels.
+  // When live, add the real URLs and Person.sameAs picks them up automatically.
+  // PHASE-3-REPORT.md TODO list tracks this.
+  social: [] as string[],
   phone: '+90 506 770 8295',
   email: 'info@almanyar.com',
 } as const;
@@ -177,19 +177,25 @@ export function rootPageMetadata(input: {
 
 /* ─────────────────────────  JSON-LD builders  ───────────────────────── */
 
-/** The Almanyar entity. A single human consultant, not a registered company.
- *  All other JSON-LD references this Person via { @id: …/#person }. */
+/** The Almanyar entity. A single human consultant (Mohammad Jahanbani),
+ *  not a registered company. All other JSON-LD references this Person via
+ *  { @id: …/#person }. */
 export function personLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
     '@id': `${SITE.url}/#person`,
-    name: SITE.name,
-    alternateName: SITE.brandLatin,
+    name: OWNER.fullName,           // محمد جهانبانی
+    alternateName: OWNER.brand,     // آلمانیار
     url: SITE.url,
-    image: absoluteUrl(SITE.logo),
+    image: absoluteUrl(OWNER_PHOTO_URL),
     description: 'مشاور مهاجرت تحصیلی به آلمان از ترکیه',
-    jobTitle: 'مشاور مهاجرت تحصیلی',
+    jobTitle: OWNER.jobTitle,
+    affiliation: {
+      '@type': 'EducationalOrganization',
+      name: OWNER.university,
+      url: OWNER.universityUrl,
+    },
     knowsLanguage: ['fa', 'tr', 'de', 'en'],
     knowsAbout: [
       'German student visa',
@@ -204,12 +210,13 @@ export function personLd() {
       'e-ikamet',
     ],
     // Email intentionally omitted (PHASE-2-PLAN §5.A ack: no scraper bait).
-    // Contact surface is the homepage anchor.
+    // Contact surface is the homepage anchor; spoken support today is fa+tr
+    // (broader knowsLanguage list above covers reading/writing knowledge).
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer support',
       url: `${SITE.url}/fa#contact`,
-      availableLanguage: ['Persian', 'Turkish', 'German', 'English'],
+      availableLanguage: ['fa', 'tr'],
     },
     sameAs: SITE.social,
   };
