@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/admin-guard';
+import { notifyStudentTaskAdminTicked, notifyStudentTaskBlocked } from '@/lib/notify';
 
 /**
  * Phase-5 TASK-03 — admin edit / delete a single Task.
@@ -50,7 +51,19 @@ export async function PATCH(
 
   const existing = await prisma.task.findUnique({
     where: { id: params.id },
-    select: { id: true, adminTicked: true, status: true },
+    select: {
+      id: true,
+      adminTicked: true,
+      status: true,
+      title: true,
+      application: {
+        select: {
+          id: true,
+          title: true,
+          user: { select: { id: true, email: true } },
+        },
+      },
+    },
   });
   if (!existing) {
     return NextResponse.json({ error: 'Task not found' }, { status: 404 });
@@ -86,6 +99,30 @@ export async function PATCH(
     where: { id: params.id },
     data,
   });
+
+  // Fire notifications on meaningful transitions only. Cap is enforced
+  // inside lib/notify (5 / kind / case / 24h) so the loop above doesn't
+  // need its own throttling.
+  const becameTicked = parsed.data.adminTicked === true && !existing.adminTicked;
+  const becameBlocked = parsed.data.status === 'BLOCKED' && existing.status !== 'BLOCKED';
+
+  if (becameTicked) {
+    await notifyStudentTaskAdminTicked({
+      userId: existing.application.user.id,
+      userEmail: existing.application.user.email,
+      applicationId: existing.application.id,
+      applicationTitle: existing.application.title,
+      taskTitle: task.title,
+    });
+  } else if (becameBlocked) {
+    await notifyStudentTaskBlocked({
+      userId: existing.application.user.id,
+      userEmail: existing.application.user.email,
+      applicationId: existing.application.id,
+      applicationTitle: existing.application.title,
+      taskTitle: task.title,
+    });
+  }
 
   return NextResponse.json({ task });
 }

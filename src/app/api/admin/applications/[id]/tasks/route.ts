@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/admin-guard';
+import { notifyStudentTaskAdded } from '@/lib/notify';
 
 /**
  * Phase-5 TASK-03 — admin creates a Task on an Application.
@@ -44,7 +45,11 @@ export async function POST(
 
   const application = await prisma.application.findUnique({
     where: { id: params.id },
-    select: { id: true },
+    select: {
+      id: true,
+      title: true,
+      user: { select: { id: true, email: true } },
+    },
   });
   if (!application) {
     return NextResponse.json({ error: 'Application not found' }, { status: 404 });
@@ -67,6 +72,14 @@ export async function POST(
       requiredDocCategory: parsed.data.requiredDocCategory ?? null,
       dueDate: parsed.data.dueDate ? new Date(parsed.data.dueDate) : null,
     },
+  });
+
+  await notifyStudentTaskAdded({
+    userId: application.user.id,
+    userEmail: application.user.email,
+    applicationId: application.id,
+    applicationTitle: application.title,
+    taskTitle: task.title,
   });
 
   return NextResponse.json({ task }, { status: 201 });

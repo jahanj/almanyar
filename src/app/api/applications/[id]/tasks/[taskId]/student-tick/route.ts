@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { requireUser } from '@/lib/session';
+import { notifyAdminStudentTicked } from '@/lib/notify';
 
 /**
  * Phase-5 TASK-02 — student "I did it" tick.
@@ -44,7 +45,12 @@ export async function POST(
       applicationId: params.id,
       application: { userId: guard.session.user.id },
     },
-    select: { id: true, studentTicked: true },
+    select: {
+      id: true,
+      studentTicked: true,
+      title: true,
+      application: { select: { id: true, title: true } },
+    },
   });
 
   if (!task) {
@@ -75,9 +81,17 @@ export async function POST(
     },
   });
 
-  // TASK-04 will hook notification here:
-  //   if (parsed.data.done) await notify({ kind: 'task.studentTicked', ... })
-  // Today: silent. The admin will see the change on next /admin/applications load.
+  // Only notify on the false→true transition (the idempotent no-op
+  // above already short-circuited true→true and false→false). The
+  // false→true case is the only one that needs admin attention.
+  if (parsed.data.done) {
+    await notifyAdminStudentTicked({
+      applicationId: task.application.id,
+      applicationTitle: task.application.title,
+      taskTitle: task.title,
+      studentName: guard.session.user.name ?? guard.session.user.email ?? 'کاربر',
+    });
+  }
 
   return NextResponse.json({ ok: true, task: updated });
 }
