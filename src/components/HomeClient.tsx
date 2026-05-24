@@ -5,6 +5,7 @@ import CinematicJourneyHero from './journey/CinematicJourneyHero';
 import TrustBar from './TrustBar';
 import UniversityMarquee from './UniversityMarquee';
 import TrustModel from './TrustModel';
+import PanelLanding from './PanelLanding';
 import Services from './Services';
 import Process from './Process';
 import Education from './Education';
@@ -56,6 +57,7 @@ export default function HomeClient({
         <UniversityMarquee />
         <TrustBar dict={dict} />
         <TrustModel locale={locale} />
+        <PanelLanding />
         <Services dict={dict} />
         <Process dict={dict} />
         <Education dict={dict} locale={locale} />
