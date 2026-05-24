@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
+import RoadmapTimeline, { type Task } from './RoadmapTimeline';
 
 type Doc = {
   id: string;
@@ -21,6 +23,7 @@ type Application = {
   adminNotes?: string | null;
   createdAt: string;
   documents: Doc[];
+  tasks?: Task[];
 };
 
 const APP_TYPE_LABEL: Record<string, string> = {
@@ -186,6 +189,29 @@ function ApplicationCard({ app, onChange }: { app: Application; onChange: () => 
       {app.adminNotes && (
         <div className="bg-amber-50 border-r-4 border-amber-400 rounded-lg p-3 mb-4 text-sm text-amber-800">
           📋 پیام کارشناس: {app.adminNotes}
+        </div>
+      )}
+
+      {/* Roadmap — Phase 5 co-managed panel */}
+      {app.tasks !== undefined && (
+        <div className="mb-5">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-semibold text-sm text-gray-700">
+              پنل گام‌های شما
+              {app.tasks.length > 0 && (
+                <span className="text-xs text-gray-500 font-normal mr-2">
+                  ({app.tasks.filter((t) => t.adminTicked).length} از {app.tasks.length} گام تأیید شده)
+                </span>
+              )}
+            </h4>
+            <Link
+              href={`/dashboard/cases/${app.id}`}
+              className="text-xs text-blue-600 hover:underline"
+            >
+              مشاهده پنل کامل →
+            </Link>
+          </div>
+          <RoadmapTimeline applicationId={app.id} tasks={app.tasks} onChange={onChange} />
         </div>
       )}
 
