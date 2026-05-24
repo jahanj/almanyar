@@ -712,6 +712,16 @@ function AnimatedHero(props: Props) {
           2.0,
         );
 
+      // Boarding pass exits earlier than the rest of the flight scene so it
+      // can't bleed into the Turkey caption during the cross-fade. Phase-4
+      // readability fix: production screenshot showed the boarding pass
+      // overlapping the Turkey title at scrub ~44%.
+      tl.to(
+        '.cj-flight-boarding',
+        { xPercent: -40, opacity: 0, duration: 0.3 },
+        2.55,
+      );
+
       // Exit flight
       tl.to(
         '.cj-caption[data-caption="flight"]',
