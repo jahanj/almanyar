@@ -349,10 +349,10 @@ function BrandScene({
       <div className="pointer-events-auto relative z-30 mx-auto flex h-full max-w-3xl flex-col items-center justify-center px-5 text-center sm:px-6">
         <Chip tone="dark">🤝 آلمانیار</Chip>
         <h2 className="cj-brand-title mt-6 text-balance text-3xl font-extrabold leading-[1.2] tracking-tight text-white sm:text-4xl md:text-5xl">
-          آلمان‌یار، همراه هوشمند مسیر مهاجرت شما
+          آلمانیار، همراه هوشمند مسیر مهاجرت شما
         </h2>
         <p className="cj-brand-sub mt-5 max-w-2xl text-base leading-8 text-white/85 md:text-lg">
-          از نخستین تصمیم در تهران تا روز اول زندگی در آلمان، یک مسیر روشن، گام‌به‌گام و قابل اعتماد در کنار توست.
+          از نخستین تصمیم در تهران تا روز اول زندگی در آلمان، یک مسیر روشن، گام‌به‌گام و قابل اعتماد در کنار شماست.
         </p>
 
         <div className="cj-brand-chips mt-7">
