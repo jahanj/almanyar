@@ -55,10 +55,13 @@ async function main() {
     },
   ];
 
-  for (const review of sampleReviews) {
-    await prisma.review.create({
-      data: { ...review, status: ReviewStatus.APPROVED },
-    });
+  // Only seed sample reviews on a fresh DB so re-running the seed is idempotent.
+  if ((await prisma.review.count()) === 0) {
+    for (const review of sampleReviews) {
+      await prisma.review.create({
+        data: { ...review, status: ReviewStatus.APPROVED },
+      });
+    }
   }
 
   console.log(`✅ Seed completed. Admin: ${adminEmail}`);
