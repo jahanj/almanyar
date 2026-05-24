@@ -29,6 +29,17 @@ export async function GET(req: Request) {
             mimeType: true, size: true, reviewNote: true, createdAt: true,
           },
         },
+        // Phase-5 — admin panel needs the roadmap to render AdminTaskEditor.
+        tasks: {
+          orderBy: { order: 'asc' },
+          select: {
+            id: true, order: true, title: true, description: true,
+            category: true, status: true, requiredDocCategory: true,
+            studentTicked: true, studentTickedAt: true,
+            adminTicked: true, adminTickedAt: true,
+            dueDate: true, createdAt: true, updatedAt: true,
+          },
+        },
       },
     }),
     prisma.application.count({ where }),
