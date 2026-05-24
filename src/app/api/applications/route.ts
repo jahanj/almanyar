@@ -23,6 +23,17 @@ export async function GET() {
           mimeType: true, size: true, reviewNote: true, createdAt: true,
         },
       },
+      // Phase-5 — workspace roadmap, ordered by author intent.
+      tasks: {
+        orderBy: { order: 'asc' },
+        select: {
+          id: true, order: true, title: true, description: true,
+          category: true, status: true, requiredDocCategory: true,
+          studentTicked: true, studentTickedAt: true,
+          adminTicked: true, adminTickedAt: true,
+          dueDate: true, createdAt: true, updatedAt: true,
+        },
+      },
     },
   });
 
