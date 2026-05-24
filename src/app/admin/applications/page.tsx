@@ -1,13 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import NotifyCustomerButton from '@/components/admin/NotifyCustomerButton';
 
 type Doc = {
   id: string; category: string; status: 'PENDING' | 'APPROVED' | 'REJECTED';
   originalName: string; mimeType: string; size: number; reviewNote?: string | null; createdAt: string;
 };
 type Application = {
-  id: string; type: string; status: string; title: string; adminNotes?: string | null; createdAt: string;
+  id: string; type: string; status: string; title: string; adminNotes?: string | null;
+  lastNotifiedAt?: string | null;
+  createdAt: string;
   user: { name: string; email: string; phone?: string | null };
   documents: Doc[];
 };
@@ -32,6 +35,9 @@ export default function AdminApplicationsPage() {
   const [status, setStatus] = useState('SUBMITTED');
   const [loading, setLoading] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
+  // Phase-4 §4 — track unsaved adminNotes text so NotifyCustomerButton
+  // can send the latest value without requiring a prior save.
+  const [notes, setNotes] = useState<Record<string, string>>({});
 
   const load = async () => {
     setLoading(true);
@@ -113,10 +119,19 @@ export default function AdminApplicationsPage() {
                     <p className="text-sm font-medium mb-1">پیام به کاربر:</p>
                     <textarea
                       defaultValue={app.adminNotes ?? ''}
+                      onChange={(e) => setNotes({ ...notes, [app.id]: e.target.value })}
                       onBlur={(e) => { if (e.target.value !== (app.adminNotes ?? '')) saveNotes(app.id, e.target.value); }}
                       rows={2} className="w-full border rounded p-2 text-sm"
                       placeholder="مثلاً: لطفاً ریزنمرات را هم بارگذاری کنید."
                     />
+                    <div className="mt-2">
+                      <NotifyCustomerButton
+                        apiPath={`/api/admin/applications/${app.id}/notify`}
+                        unsavedMessage={notes[app.id]}
+                        lastNotifiedAt={app.lastNotifiedAt}
+                        onSent={load}
+                      />
+                    </div>
                   </div>
 
                   {/* Status change */}

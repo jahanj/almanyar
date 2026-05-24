@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import NotifyCustomerButton from '@/components/admin/NotifyCustomerButton';
 
 type Contact = {
   id: string;
@@ -12,6 +13,7 @@ type Contact = {
   serviceType?: string | null;
   status: 'NEW' | 'IN_PROGRESS' | 'ANSWERED' | 'ARCHIVED';
   adminNotes?: string | null;
+  lastNotifiedAt?: string | null;
   createdAt: string;
 };
 
@@ -56,6 +58,7 @@ export default function AdminContactsPage() {
     });
     load();
   };
+
 
   const remove = async (id: string) => {
     if (!confirm('حذف این درخواست؟')) return;
@@ -111,10 +114,18 @@ export default function AdminContactsPage() {
                       rows={2}
                       className="w-full border rounded p-2 text-sm"
                     />
-                    <button
-                      onClick={() => saveNotes(c.id)}
-                      className="mt-1 text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
-                    >ذخیره یادداشت</button>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => saveNotes(c.id)}
+                        className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+                      >ذخیره یادداشت</button>
+                      <NotifyCustomerButton
+                        apiPath={`/api/admin/contacts/${c.id}/notify`}
+                        unsavedMessage={notes[c.id]}
+                        lastNotifiedAt={c.lastNotifiedAt}
+                        onSent={load}
+                      />
+                    </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {(['NEW', 'IN_PROGRESS', 'ANSWERED', 'ARCHIVED'] as const)

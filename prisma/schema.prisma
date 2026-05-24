@@ -111,6 +111,9 @@ model Application {
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
+  // Phase-4 — last time the owner pushed adminNotes to the lead by email.
+  lastNotifiedAt DateTime?
+
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   documents Document[]
 
@@ -195,6 +198,9 @@ model ContactRequest {
   germanyRiskAcknowledged   Boolean?
   germanyRiskAcknowledgedAt DateTime?
 
+  // Phase-4 — last time the owner pushed adminNotes to the lead by email.
+  lastNotifiedAt DateTime?
+
   user        User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([status])
@@ -269,6 +275,9 @@ model Evaluation {
   germanyRiskAcknowledged   Boolean?
   germanyRiskAcknowledgedAt DateTime?
 
+  // Phase-4 — last time the owner pushed adminNotes to the lead by email.
+  lastNotifiedAt DateTime?
+
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([status])
@@ -322,4 +331,27 @@ model SiteStats {
   averageRating        Float?
   reviewsCount         Int?
   updatedAt            DateTime @updatedAt
+}
+
+// Phase-4 §4 — every customer-facing email sent from /admin pages
+// (notify-customer button) writes a row here so the owner has an
+// auditable trail of what was sent, to whom, and when.
+enum AdminEmailLeadType {
+  CONTACT
+  EVALUATION
+  APPLICATION
+}
+
+model AdminEmailLog {
+  id        String              @id @default(cuid())
+  leadType  AdminEmailLeadType
+  leadId    String
+  to        String
+  subject   String
+  snippet   String              @db.Text
+  sentBy    String?
+  sentAt    DateTime            @default(now())
+
+  @@index([leadType, leadId])
+  @@index([sentAt])
 }

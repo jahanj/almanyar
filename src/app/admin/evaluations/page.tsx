@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import NotifyCustomerButton from '@/components/admin/NotifyCustomerButton';
 
 type Pref = { university?: string; field?: string; degree?: string };
 type Evaluation = {
@@ -36,6 +37,7 @@ type Evaluation = {
   referralCode?: string | null;
   description?: string | null;
   adminNotes?: string | null;
+  lastNotifiedAt?: string | null;
   createdAt: string;
 };
 
@@ -168,9 +170,17 @@ export default function AdminEvaluationsPage() {
                       onChange={(e) => setNotes({ ...notes, [ev.id]: e.target.value })}
                       rows={2} className="w-full border rounded p-2"
                     />
-                    <button onClick={() => saveNotes(ev.id)} className="mt-1 text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
-                      ذخیره یادداشت
-                    </button>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <button onClick={() => saveNotes(ev.id)} className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+                        ذخیره یادداشت
+                      </button>
+                      <NotifyCustomerButton
+                        apiPath={`/api/admin/evaluations/${ev.id}/notify`}
+                        unsavedMessage={notes[ev.id]}
+                        lastNotifiedAt={ev.lastNotifiedAt}
+                        onSent={load}
+                      />
+                    </div>
                   </div>
 
                   <div className="flex flex-wrap gap-2">
