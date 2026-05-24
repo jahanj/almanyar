@@ -116,6 +116,17 @@ echo '0 3 * * * cd /opt/germanbiz && docker run --rm -v "$(pwd)/docker/certbot/c
 ---
 
 ## آپدیت سایت در آینده
+
+> ⚠️ **قبل از هر استقرار روی پروداکشن، حتماً build رو لوکال اجرا کنید:**
+>
+> ```bash
+> npx next build
+> ```
+>
+> `tsc --noEmit` بعضی خطاهای parser SWC رو که Next.js در زمان build می‌گیره
+> نمی‌بینه. در Phase 5 یک destructuring با `!` در LHS از tsc رد شد اما در
+> build روی سرور fail شد و مجبور شدیم با یک rsync + deploy دوباره جبران کنیم.
+
 ```bash
 cd /opt/germanbiz
 git pull            # یا دوباره rsync کن
