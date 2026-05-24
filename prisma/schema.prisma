@@ -78,6 +78,30 @@ enum DocumentStatus {
   REJECTED
 }
 
+// Phase-5 §workspace — per-task status. Admin-tick = canonical DONE
+// (PHASE-5-PLAN §2.2). PENDING and IN_PROGRESS are the working states;
+// BLOCKED is for admin to flag dependencies the student can't resolve.
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
+  BLOCKED
+}
+
+// Phase-5 §workspace — task category, used for grouping + icon picking
+// in the UI. Mirrors the documented Turkey-preparation steps.
+enum TaskCategory {
+  UNIVERSITY_REGISTRATION
+  RESIDENCE_PERMIT
+  HEALTH_INSURANCE
+  BANK_ACCOUNT
+  SPERRKONTO
+  MONEY_TRANSFER
+  DOCUMENT_TRANSLATION
+  EMBASSY_APPOINTMENT
+  OTHER
+}
+
 model User {
   id            String   @id @default(cuid())
   name          String
@@ -97,6 +121,12 @@ model User {
   marketingConsent    Boolean   @default(false)
   marketingConsentAt  DateTime?
 
+  // Phase-5 §workspace — opt into a daily digest instead of per-event
+  // notification emails. Column lands now so the future digest worker
+  // has its preference home; the rate-limit cap (5/student/day/case)
+  // covers the noisy-email case in the meantime.
+  notificationDailyDigest Boolean @default(false)
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -106,6 +136,8 @@ model User {
   applications     Application[]
   documents        Document[]
   sessions         Session[]
+  tasksStudentTicked Task[] @relation("StudentTickedTasks")
+  tasksAdminTicked   Task[] @relation("AdminTickedTasks")
 }
 
 model Application {
@@ -123,6 +155,7 @@ model Application {
 
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   documents Document[]
+  tasks     Task[]
 
   @@index([userId])
   @@index([status])
@@ -361,4 +394,63 @@ model AdminEmailLog {
 
   @@index([leadType, leadId])
   @@index([sentAt])
+}
+
+// Phase-5 §workspace — a single step in an Application's roadmap.
+//
+// Brief §۵: «چک‌لیست شخصی‌سازی‌شده توسط ادمین برای هر کاربر». The owner
+// builds a sequence of tasks per Application; the student sees them
+// in `order asc`, ticks "I did it" (studentTicked), and the owner
+// confirms (adminTicked → status=DONE).
+//
+// `requiredDocCategory` optionally binds a task to a Document upload:
+// when the student uploads a Document of the named category linked to
+// the same Application, the UI surfaces it on the task; admin still
+// has to mark the task DONE explicitly.
+model Task {
+  id            String       @id @default(cuid())
+  applicationId String
+  order         Int
+  title         String
+  description   String?      @db.Text
+  category      TaskCategory @default(OTHER)
+  status        TaskStatus   @default(PENDING)
+
+  // Optional binding: if set, the student is expected to upload a
+  // Document of this category to complete the task. UI shows progress.
+  requiredDocCategory DocumentCategory?
+
+  // Two-way ticking (PHASE-5-PLAN §2.2). studentTicked is informational;
+  // admin's tick is what flips status=DONE in the service layer.
+  studentTicked    Boolean   @default(false)
+  studentTickedAt  DateTime?
+  studentTickedById String?
+
+  adminTicked      Boolean   @default(false)
+  adminTickedAt    DateTime?
+  adminTickedById  String?
+
+  dueDate   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  application      Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  studentTickedBy  User?       @relation("StudentTickedTasks", fields: [studentTickedById], references: [id], onDelete: SetNull)
+  adminTickedBy    User?       @relation("AdminTickedTasks",   fields: [adminTickedById],   references: [id], onDelete: SetNull)
+
+  @@index([applicationId, order])
+  @@index([status])
+}
+
+// Phase-5 §workspace — lightweight rate-limit ledger for student-facing
+// notification emails. Cap is currently 5 / userId / kind / 24h, enforced
+// at the call site in lib/notify.ts. A simple table is fine for the
+// volume we expect; we can swap to Redis later without changing the API.
+model EmailRateLimit {
+  id     String   @id @default(cuid())
+  userId String
+  kind   String
+  sentAt DateTime @default(now())
+
+  @@index([userId, kind, sentAt])
 }
