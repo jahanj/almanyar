@@ -7,9 +7,9 @@ import { prisma } from './prisma';
 export async function requireUser() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
-    return { error: NextResponse.json({ error: 'برای دسترسی باید وارد شوید' }, { status: 401 }), session: null as const };
+    return { error: NextResponse.json({ error: 'برای دسترسی باید وارد شوید' }, { status: 401 }), session: null };
   }
-  return { error: null as const, session };
+  return { error: null, session };
 }
 
 /**
@@ -27,7 +27,7 @@ export async function requireVerifiedUser() {
   if (!user?.emailVerified) {
     return {
       error: NextResponse.json({ error: 'برای این عملیات ابتدا ایمیل خود را تایید کنید' }, { status: 403 }),
-      session: null as const,
+      session: null,
     };
   }
   return guard;
