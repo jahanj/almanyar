@@ -126,7 +126,9 @@ export default function AdminTaskEditor({
     const swapIdx = idx + dir;
     if (idx < 0 || swapIdx < 0 || swapIdx >= sorted.length) return;
     const next = [...sorted];
-    [next[idx]!, next[swapIdx]!] = [next[swapIdx]!, next[idx]!];
+    const tmp = next[idx]!;
+    next[idx] = next[swapIdx]!;
+    next[swapIdx] = tmp;
     const items = next.map((t, i) => ({ id: t.id, order: i }));
 
     setBusy(id);
