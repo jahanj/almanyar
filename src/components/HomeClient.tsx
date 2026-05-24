@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import CinematicJourneyHero from './journey/CinematicJourneyHero';
 import TrustBar from './TrustBar';
+import UniversityMarquee from './UniversityMarquee';
 import TrustModel from './TrustModel';
 import Services from './Services';
 import Process from './Process';
@@ -52,6 +53,7 @@ export default function HomeClient({
           stats={stats}
           onReviewClick={() => setOpen(true)}
         />
+        <UniversityMarquee />
         <TrustBar dict={dict} />
         <TrustModel locale={locale} />
         <Services dict={dict} />

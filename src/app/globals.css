@@ -131,6 +131,24 @@ body {
 .cj-faq-content[data-state='open']  { animation: faq-open  200ms cubic-bezier(0.22, 0.61, 0.36, 1); }
 .cj-faq-content[data-state='closed']{ animation: faq-close 180ms cubic-bezier(0.22, 0.61, 0.36, 1); }
 
+/* University marquee — CSS-only horizontal loop, RTL-aware.
+   Track is rendered with the array DUPLICATED (see UniversityMarquee.tsx);
+   translating by -50% lands the second copy exactly where the first
+   started, so the loop is seamless. Pause on hover. */
+@keyframes universityMarqueeRtl {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.cj-marquee-frame { mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); }
+.cj-marquee-track {
+  animation: universityMarqueeRtl 60s linear infinite;
+  will-change: transform;
+}
+.cj-marquee-frame:hover .cj-marquee-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .cj-marquee-track { animation: none; transform: translateX(0); flex-wrap: wrap; justify-content: center; width: 100%; }
+}
+
 /* Migration-journey atmospheric twinkle (city lights / stars). */
 @keyframes journeyTwinkle {
   0%, 100% { opacity: 0.25; transform: scale(1); }
