@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import NotifyCustomerButton from '@/components/admin/NotifyCustomerButton';
+import AdminTaskEditor, { type AdminTask } from '@/components/admin/AdminTaskEditor';
 
 type Doc = {
   id: string; category: string; status: 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -13,6 +14,7 @@ type Application = {
   createdAt: string;
   user: { name: string; email: string; phone?: string | null };
   documents: Doc[];
+  tasks?: AdminTask[];
 };
 
 const APP_STATUSES = ['SUBMITTED', 'UNDER_REVIEW', 'DOCUMENTS_REQUESTED', 'APPROVED', 'REJECTED', 'COMPLETED'];
@@ -133,6 +135,13 @@ export default function AdminApplicationsPage() {
                       />
                     </div>
                   </div>
+
+                  {/* Phase-5 — roadmap editor */}
+                  <AdminTaskEditor
+                    applicationId={app.id}
+                    tasks={app.tasks ?? []}
+                    onChange={load}
+                  />
 
                   {/* Status change */}
                   <div className="flex flex-wrap gap-2">
