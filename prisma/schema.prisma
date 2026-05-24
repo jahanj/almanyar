@@ -90,6 +90,13 @@ model User {
   failedLoginAttempts Int       @default(0)
   lockedUntil         DateTime?
 
+  // Phase-4 §5 — marketing email opt-in. Defaulted FALSE so silence
+  // is opt-OUT (GDPR-safe). marketingConsentAt is set the moment the
+  // user toggles it on; cleared when they unsubscribe via the signed
+  // token endpoint.
+  marketingConsent    Boolean   @default(false)
+  marketingConsentAt  DateTime?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

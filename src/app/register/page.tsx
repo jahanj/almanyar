@@ -8,7 +8,13 @@ const fieldClassName =
   'mt-1 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10';
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
+    marketingConsent: false,
+  });
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
@@ -126,6 +132,24 @@ export default function RegisterPage() {
             />
             <p className="mt-1 text-xs text-slate-500">حداقل ۸ کاراکتر</p>
           </div>
+
+          {/* Phase-4 §5 — marketing opt-in. Unchecked by default (GDPR). */}
+          <label
+            className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700"
+            data-testid="register-marketing-wrap"
+          >
+            <input
+              type="checkbox"
+              checked={form.marketingConsent}
+              onChange={(event) => setForm({ ...form, marketingConsent: event.target.checked })}
+              className="mt-1 h-4 w-4 rounded border-slate-400 text-slate-950 focus:ring-slate-950"
+              data-testid="register-marketing"
+            />
+            <span className="leading-7">
+              موافقم گاه‌به‌گاه راهنماها و اطلاعات مفید آلمانیار را از طریق ایمیل دریافت کنم.
+              <span className="block text-xs text-slate-500">اختیاری — هر زمان می‌توانید با یک کلیک لغو کنید.</span>
+            </span>
+          </label>
 
           {err && (
             <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" aria-live="polite">
