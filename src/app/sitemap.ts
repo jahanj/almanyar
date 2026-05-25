@@ -5,6 +5,7 @@ import { PUBLIC_ROUTES } from '@/config/site-routes';
 import { TOPICS } from '@/lib/germany-topics';
 import { TOPIC_CONTENT } from '@/lib/topic-content';
 import { resolveUpdatedAt } from '@/lib/dates';
+import { prisma } from '@/lib/prisma';
 
 /**
  * sitemap.xml — generated at /sitemap.xml.
@@ -31,7 +32,7 @@ function alternates(path: string) {
   return { languages: langs };
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const main: MetadataRoute.Sitemap = PUBLIC_ROUTES.map((r) => ({
     url: localizedUrl(defaultLocale, r.path),
     lastModified: resolveUpdatedAt({ explicit: r.updatedAt, sourceFile: r.source }),
@@ -58,5 +59,45 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
-  return [...main, ...topics];
+  // Phase-8D — published news posts + category landing pages.
+  // Sitemap is regenerated on each request, so new posts surface
+  // immediately without a deploy.
+  const [posts, categories] = await Promise.all([
+    prisma.post.findMany({
+      where: { status: 'PUBLISHED' },
+      select: { slug: true, updatedAt: true, publishedAt: true },
+      orderBy: { publishedAt: 'desc' },
+    }).catch(() => []),
+    prisma.postCategory.findMany({
+      select: { slug: true },
+      orderBy: { order: 'asc' },
+    }).catch(() => []),
+  ]);
+
+  const newsHub: MetadataRoute.Sitemap = [
+    {
+      url: localizedUrl(defaultLocale, '/news'),
+      lastModified: posts[0]?.updatedAt ?? new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+      alternates: alternates('/news'),
+    },
+    ...categories.map((c) => ({
+      url: localizedUrl(defaultLocale, `/news/category/${c.slug}`),
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+      alternates: alternates(`/news/category/${c.slug}`),
+    })),
+  ];
+
+  const postEntries: MetadataRoute.Sitemap = posts.map((p) => ({
+    url: localizedUrl(defaultLocale, `/news/${p.slug}`),
+    lastModified: p.updatedAt,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+    alternates: alternates(`/news/${p.slug}`),
+  }));
+
+  return [...main, ...topics, ...newsHub, ...postEntries];
 }
