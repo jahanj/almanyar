@@ -3,9 +3,16 @@
 **Status:** PLAN only. No code in this phase yet — implementation gated
 on explicit user sign-off on the Decisions section below.
 **Date:** 2026-05-25.
-**Decisions already made by user:**
+**Decisions already made by user (locked):**
 - CMS approach = in-house (admin route + Prisma + TipTap rich-text editor)
 - Sequencing = ship Phase 7 emails first (DONE), then plan CMS
+- News URL = `/fa/news/<slug>` (not `/blog/` or `/articles/`)
+- Homepage trim happens inside Phase 8 (sub-phase 8F)
+- Scheduled posts deferred — only DRAFT/PUBLISHED states
+- Author byline = "آلمانیار" (brand) — no personal name surfaced on posts
+- `news-updates` is its own category (catch-all for general announcements)
+- Cover image is optional; missing-cover fallback is a category-tinted
+  gradient card so feed visuals stay consistent
 
 ---
 
@@ -279,26 +286,10 @@ news-style post, bridging the systems. Not in current scope.
 Realistic estimate: 2–3 shipping sessions. Can pause/resume between
 sub-phases.
 
-## 12. Open questions for user
+## 12. Open questions (RESOLVED — 2026-05-25)
 
-These should be resolved before any commit lands.
-
-1. **News URL convention** — `/fa/news/<slug>` (my proposal) or
-   `/fa/blog/<slug>`? Industry uses both; news feels more authoritative
-   given the migration-updates topic.
-2. **Trim homepage now or later?** Phase 8F can be skipped or deferred
-   to a Phase 9 if user wants to defer the visible-section reordering.
-3. **Categories list final?** Brief listed: exams / germany-visa /
-   study-germany / work-germany / life-germany / news-updates. Should
-   "news-updates" be its own category or a tag?
-4. **Cover image:** required or optional? My default is optional, with
-   a soft fallback (category-tinted gradient card) if not set.
-5. **Author display:** show real name + photo on each post, or generic
-   "آلمانیار"? If real name, surfaces social-proof but reveals owner;
-   if brand, more anonymous but less personal.
-6. **Drafts / scheduled posts:** Phase 8B will support DRAFT/PUBLISHED.
-   Should we also support `scheduledFor: DateTime?` to publish at a
-   future time? (~30 min extra work + cron job to flip status.)
+All Q1–Q6 are answered in the locked-decisions list at the top.
+Implementation can begin with Phase 8A.
 
 ## 13. Risks
 
