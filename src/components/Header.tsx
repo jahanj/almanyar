@@ -55,10 +55,9 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
             <Image
               src="/logo.png"
               alt={dict.meta.title}
-              width={300}
-              height={205}
+              width={1248}
+              height={832}
               priority
-              unoptimized
               className="h-11 w-auto md:h-12"
             />
           </Link>
