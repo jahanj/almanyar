@@ -8,6 +8,7 @@ import { localePath } from '@/lib/i18n';
 import JsonLd from '@/components/JsonLd';
 import { pageMetadata, breadcrumbLd, localizedUrl } from '@/lib/seo';
 import { PAGE_SEO } from '@/lib/seo-content';
+import RelatedLinks from '@/components/RelatedLinks';
 import {
   inflationNote, minWageNote, monthlySummary,
   rentIstanbul, rentAnkaraIzmir, rentCheaper, rentNote,
@@ -137,6 +138,17 @@ export default async function TurkeyCostsPage({ params }: { params: { locale: Lo
             </Link>
           </div>
         </section>
+
+        <RelatedLinks
+          items={[
+            { title: 'اقامت تحصیلی ترکیه', description: 'مراحل ثبت‌نام، مدارک e-ikamet و راهنمای استقرار در شهرهای اصلی.', href: '/fa/turkey-residence', icon: '🛂', accent: 'rose' },
+            { title: 'ویزای آلمان از ترکیه', description: 'وقت سفارت، iDATA و نکات مالی برای ایرانیان مقیم ترکیه.', href: '/fa/germany-visa-from-turkey', icon: '🇩🇪', accent: 'green' },
+            { title: 'تحصیل در آلمان', description: 'انتخاب دانشگاه، رشته، آزمون‌های زبان و فرایند uni-assist.', href: '/fa/study-germany', icon: '🎓', accent: 'blue' },
+            { title: 'حساب مسدودی (Sperrkonto)', description: 'چقدر پول لازم است، چطور افتتاح کنید و کجا.', href: '/fa/germany-visa/documents', icon: '💰', accent: 'amber' },
+            { title: 'اخبار و راهنماها', description: 'تازه‌ترین تغییرات و توصیه‌ها در همه‌ی این موضوعات.', href: '/fa/news', icon: '📰', accent: 'slate' },
+            { title: 'فرم ارزیابی رایگان', description: 'ببینید بودجه‌ی شما برای مسیر ترکیه چقدر کافی است.', href: '/fa/evaluation', icon: '📝', accent: 'purple' },
+          ]}
+        />
       </main>
 
     </div>

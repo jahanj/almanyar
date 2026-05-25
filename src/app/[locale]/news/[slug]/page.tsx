@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { articleLd, breadcrumbLd, localizedUrl, pageMetadata, SITE } from '@/lib/seo';
 import JsonLd from '@/components/JsonLd';
 import PageHero from '@/components/PageHero';
+import RelatedNews from '@/components/news/RelatedNews';
 import { formatJalali } from '@/lib/dates';
 import { defaultLocale, type Locale } from '@/lib/i18n';
 
@@ -142,6 +143,13 @@ export default async function NewsPostPage({
             {datePublished && formatJalali(datePublished)}
           </span>
         </div>
+
+        {/* Phase-8E — related news, scored by same-category + shared tags. */}
+        <RelatedNews
+          categorySlug={post.category.slug}
+          excludeSlug={post.slug}
+          tagSlugs={post.tags.map((t) => t.tag.slug)}
+        />
       </main>
     </div>
   );

@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import HomeClient from '@/components/HomeClient';
 import JsonLd from '@/components/JsonLd';
+import LatestNewsStrip from '@/components/LatestNewsStrip';
 import {
   faqLd,
   pageMetadata,
@@ -15,39 +16,23 @@ import {
 import { PAGE_SEO } from '@/lib/seo-content';
 import { loadSiteStats } from '@/lib/site-stats';
 
-// Rendered per-request: the homepage reads live reviews/ratings from the DB,
-// which isn't available at Docker build time, so it must not be prerendered.
+// Rendered per-request: the homepage reads live stats + latest posts from
+// the DB, which isn't available at Docker build time, so it must not be
+// prerendered.
 export const dynamic = 'force-dynamic';
 
-const REVIEW_LOAD_TIMEOUT_MS = 1500;
-
-type ReviewRow = {
-  id: string;
-  authorName: string;
-  rating: number;
-  title: string | null;
-  content: string;
-  createdAt: Date;
-};
-
-function loadHomepageReviews() {
-  const query = Promise.all([
-    prisma.review.findMany({
-      where: { status: 'APPROVED' },
-      orderBy: { createdAt: 'desc' },
-      take: 9,
-      select: { id: true, authorName: true, rating: true, title: true, content: true, createdAt: true },
-    }),
-    prisma.review.aggregate({ where: { status: 'APPROVED' }, _avg: { rating: true }, _count: true }),
-  ])
-    .then(([reviews, agg]) => ({ reviews, agg }))
-    .catch(() => null);
-
-  const timeout = new Promise<null>((resolve) => {
-    setTimeout(() => resolve(null), REVIEW_LOAD_TIMEOUT_MS);
-  });
-
-  return Promise.race([query, timeout]);
+function loadLatestPosts() {
+  return prisma.post.findMany({
+    where: { status: 'PUBLISHED' },
+    orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
+    take: 3,
+    select: {
+      slug: true, title: true, excerpt: true,
+      coverImageUrl: true, coverImageAlt: true,
+      publishedAt: true,
+      category: { select: { slug: true, name: true } },
+    },
+  }).catch(() => []);
 }
 
 export function generateMetadata(): Metadata {
@@ -59,10 +44,7 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
   if (!locales.includes(params.locale)) notFound();
   const dict = await getDictionary(params.locale);
 
-  const [result, stats] = await Promise.all([loadHomepageReviews(), loadSiteStats()]);
-
-  const reviews: ReviewRow[] = result?.reviews ?? [];
-  const serialized = reviews.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() }));
+  const [stats, latestPosts] = await Promise.all([loadSiteStats(), loadLatestPosts()]);
 
   return (
     <>
@@ -82,8 +64,8 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
       <HomeClient
         dict={dict}
         locale={params.locale}
-        initialReviews={serialized}
         stats={stats}
+        latestNewsSlot={<LatestNewsStrip posts={latestPosts} />}
       />
     </>
   );

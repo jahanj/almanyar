@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getDictionary, locales, type Locale } from '@/lib/i18n';
 import PageHero, { pageCtaPrimary } from '@/components/PageHero';
+import RelatedLinks from '@/components/RelatedLinks';
 import { localePath } from '@/lib/i18n';
 import FaqAccordion from '@/components/FaqAccordion';
 import JsonLd from '@/components/JsonLd';
@@ -199,6 +200,17 @@ export default async function TurkeyResidencePage({ params }: { params: { locale
             رزرو مشاوره رایگان
           </Link>
         </section>
+
+        <RelatedLinks
+          items={[
+            { title: 'هزینه‌های زندگی در ترکیه', description: 'ریزترین خرج‌های ماهانه‌ی یک دانشجو در استانبول، آنکارا، ازمیر و آنتالیا.', href: '/fa/turkey-costs', icon: '💸', accent: 'amber' },
+            { title: 'ویزای آلمان از ترکیه', description: 'مدارک، وقت سفارت، iDATA و انواع ویزای تحصیلی برای ایرانیان مقیم ترکیه.', href: '/fa/germany-visa-from-turkey', icon: '🛂', accent: 'rose' },
+            { title: 'تحصیل در آلمان', description: 'انتخاب دانشگاه، مسیر uni-assist، Studienkolleg و آزمون‌های زبان.', href: '/fa/study-germany', icon: '🎓', accent: 'blue' },
+            { title: 'نوبت سفارت آلمان از ترکیه', description: 'زمان‌بندی نوبت‌ها، iDATA و نکاتی برای رزرو سریع‌تر.', href: '/fa/germany-visa/appointment-from-turkey', icon: '📅', accent: 'green' },
+            { title: 'اخبار و به‌روزرسانی‌ها', description: 'تازه‌ترین تغییرات قوانین، سفارت‌ها و فرصت‌ها.', href: '/fa/news', icon: '📰', accent: 'slate' },
+            { title: 'فرم ارزیابی رایگان', description: 'ببینید شرایط شما برای مسیر ترکیه → آلمان چه می‌گوید.', href: '/fa/evaluation', icon: '📝', accent: 'purple' },
+          ]}
+        />
       </main>
 
     </div>

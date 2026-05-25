@@ -5,6 +5,7 @@ import FaqAccordion, { type FaqItem } from '@/components/FaqAccordion';
 import JsonLd from '@/components/JsonLd';
 import { absoluteUrl, breadcrumbLd, faqLd, localizedUrl, pageMetadata, SITE } from '@/lib/seo';
 import { PAGE_SEO } from '@/lib/seo-content';
+import RelatedLinks from '@/components/RelatedLinks';
 
 const pagePath = '/germany-visa-from-turkey';
 const seo = PAGE_SEO.germanyVisaFromTurkey;
@@ -535,6 +536,17 @@ export default async function GermanyVisaFromTurkeyPage({
           <b>سلب مسئولیت:</b> اطلاعات این صفحه جنبه راهنمایی عمومی دارد و جایگزین مشاوره حقوقی یا بررسی رسمی سفارت نیست.
           قوانین و هزینه‌ها ممکن است تغییر کنند؛ بنابراین پیش از هر اقدام، آخرین اطلاعیه‌های رسمی سفارت آلمان، iDATA و مراجع مربوطه را بررسی کنید.
         </div>
+
+        <RelatedLinks
+          items={[
+            { title: 'اقامت تحصیلی ترکیه', description: 'مرحله‌ی پیش از سفارت آلمان — مدارک اقامت تحصیلی ترکیه چطور تهیه می‌شوند.', href: '/fa/turkey-residence', icon: '🛂', accent: 'rose' },
+            { title: 'هزینه‌های زندگی در ترکیه', description: 'بودجه‌ی ماهانه برای ایستادن روی پای خود تا روز ویزا.', href: '/fa/turkey-costs', icon: '💸', accent: 'amber' },
+            { title: 'انواع ویزای ملی نوع D', description: 'تحصیلی، Sprachkurs، Job Seeker — کدام ویزا برای شما؟', href: '/fa/germany-visa/national-visa-type-d', icon: '📋', accent: 'blue' },
+            { title: 'نوبت سفارت آلمان از ترکیه', description: 'iDATA، VisaMetric و راه‌های پیدا کردن نوبت سریع‌تر.', href: '/fa/germany-visa/appointment-from-turkey', icon: '📅', accent: 'green' },
+            { title: 'مدارک لازم ویزا', description: 'فهرست کامل مدارک پذیرش، مالی، زبان و بیمه.', href: '/fa/germany-visa/documents', icon: '📑', accent: 'purple' },
+            { title: 'اخبار و به‌روزرسانی‌های ویزا', description: 'تغییرات قوانین، تأخیر سفارت و نکات تجربی تازه.', href: '/fa/news/category/germany-visa', icon: '📰', accent: 'slate' },
+          ]}
+        />
       </main>
 
     </div>
