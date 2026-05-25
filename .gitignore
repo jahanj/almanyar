@@ -41,3 +41,5 @@ next-env.d.ts
 
 # uploaded user documents
 /uploads
+
+test-results/
