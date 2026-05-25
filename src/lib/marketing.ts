@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { sendMail } from './mailer';
 import { SITE } from './seo';
+import { renderEmail } from './email-template';
 
 /**
  * Phase-4 §5 — marketing-list helpers.
@@ -45,34 +46,28 @@ export function verifyMarketingToken(token: string): string | null {
   }
 }
 
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
 /** Welcome confirmation. Fires once, at registration if the user
  *  ticked the marketing checkbox. Separate from the email-verification
  *  message — different intent, different cadence. */
 export async function sendMarketingWelcomeEmail(user: { id: string; email: string; name?: string | null }) {
-  const greeting = user.name?.trim() ? `سلام ${escapeHtml(user.name)} عزیز،` : 'سلام،';
   const unsubUrl = `${SITE.url}/api/marketing/unsubscribe?token=${encodeURIComponent(signMarketingToken(user.id))}`;
-
-  const html = `
-    <div dir="rtl" style="font-family: Tahoma, Arial; line-height: 1.9; color: #1f2937; max-width: 560px;">
-      <p>${greeting}</p>
-      <p>به فهرست خبرنامه <b>آلمانیار</b> خوش آمدید — این ایمیل تایید عضویت شماست.</p>
-      <p>گاه‌به‌گاه راهنماها و اطلاعات مفید درباره مهاجرت تحصیلی به آلمان از مسیر ترکیه را برای شما می‌فرستیم. وعده می‌دهیم اسپم نباشد.</p>
-      <p>هر زمان خواستید می‌توانید با یک کلیک لغو عضویت کنید:</p>
-      <p><a href="${unsubUrl}" style="display: inline-block; background: #e5e7eb; color: #111827; padding: 8px 16px; border-radius: 6px; text-decoration: none;">لغو عضویت</a></p>
-      <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 28px 0 14px;"/>
-      <p style="font-size: 12px; color: #6b7280;">
-        آلمانیار · <a href="${SITE.url}" style="color: #047857;">${SITE.url.replace('https://', '')}</a>
-      </p>
-    </div>
-  `;
 
   return sendMail({
     to: user.email,
     subject: 'به خبرنامه آلمانیار خوش آمدید',
-    html,
+    html: renderEmail({
+      preheader: 'عضویت شما در خبرنامه آلمانیار تأیید شد.',
+      heading: user.name?.trim() ? `${user.name} عزیز، خوش آمدید` : 'به خبرنامه آلمانیار خوش آمدید',
+      paragraphs: [
+        'عضویت شما در فهرست خبرنامه آلمانیار تأیید شد. این پیام تنها برای اطلاع و تأیید عضویت ارسال شده است.',
+        'گاه‌به‌گاه راهنماها و اطلاعات کاربردی درباره‌ی مهاجرت تحصیلی به آلمان از مسیر ترکیه — تجربه‌های واقعی، نکات سفارت، آزمون‌های زبان، هزینه‌ها و فرصت‌های پذیرش — برای شما ارسال می‌کنیم.',
+      ],
+      callout: {
+        tone: 'success',
+        text: 'وعده می‌دهیم اسپم نباشد. ایمیل‌ها هدفمند و کم‌تعداد خواهد بود.',
+      },
+      unsubscribeUrl: unsubUrl,
+    }),
   });
 }
+

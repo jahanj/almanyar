@@ -1,4 +1,6 @@
 import nodemailer from 'nodemailer';
+import { renderEmail } from './email-template';
+import { SITE } from './seo';
 
 let transporter: nodemailer.Transporter | null = null;
 
@@ -54,22 +56,26 @@ export async function notifyAdminNewContact(payload: {
   const to = process.env.ADMIN_NOTIFY_EMAIL;
   if (!to) return { skipped: true };
 
-  const html = `
-    <div dir="rtl" style="font-family: Tahoma, Arial; line-height: 1.8;">
-      <h2>درخواست مشاوره جدید</h2>
-      <p><b>نام:</b> ${escapeHtml(payload.fullName)}</p>
-      <p><b>ایمیل:</b> ${escapeHtml(payload.email)}</p>
-      ${payload.phone ? `<p><b>تلفن:</b> ${escapeHtml(payload.phone)}</p>` : ''}
-      ${payload.subject ? `<p><b>موضوع:</b> ${escapeHtml(payload.subject)}</p>` : ''}
-      <hr/>
-      <p style="white-space: pre-wrap;">${escapeHtml(payload.message)}</p>
-    </div>
-  `;
+  const summary = [
+    `نام: ${payload.fullName}`,
+    `ایمیل: ${payload.email}`,
+    payload.phone ? `تلفن: ${payload.phone}` : null,
+    payload.subject ? `موضوع: ${payload.subject}` : null,
+  ].filter(Boolean).join('\n');
 
   return sendMail({
     to,
     subject: `درخواست جدید: ${payload.subject ?? payload.fullName}`,
-    html,
+    html: renderEmail({
+      preheader: `${payload.fullName} درخواست مشاوره فرستاد`,
+      heading: 'درخواست مشاوره‌ی جدید',
+      paragraphs: [
+        'یک درخواست تماس تازه از طریق فرم سایت دریافت شد.',
+        `متن پیام:\n${payload.message}`,
+      ],
+      callout: { tone: 'info', text: summary },
+      button: { label: 'باز کردن پنل ادمین', url: `${SITE.url}/admin/contacts` },
+    }),
   });
 }
 
@@ -89,36 +95,19 @@ export async function notifyCustomer(payload: {
   message: string;
   leadLabel: string; // e.g. "پرونده ارزیابی" / "پرونده تماس"
 }) {
-  const greeting = payload.name?.trim()
-    ? `سلام ${escapeHtml(payload.name)} عزیز،`
-    : 'سلام،';
-
-  const html = `
-    <div dir="rtl" style="font-family: Tahoma, Arial; line-height: 1.9; color: #1f2937; max-width: 560px;">
-      <p>${greeting}</p>
-      <p>به‌روزرسانی جدیدی در «${escapeHtml(payload.leadLabel)}» شما داریم:</p>
-      <blockquote style="white-space: pre-wrap; border-inline-start: 3px solid #047857; padding: 8px 14px; margin: 14px 0; background: #ecfdf5; color: #064e3b;">${escapeHtml(payload.message)}</blockquote>
-      <p>اگر سؤالی دارید کافی است به همین ایمیل پاسخ دهید یا از طریق واتساپ در ارتباط باشید.</p>
-      <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 28px 0 14px;"/>
-      <p style="font-size: 12px; color: #6b7280;">
-        این پیام از طرف <b>آلمانیار</b> ارسال شده است.<br/>
-        وب‌سایت: <a href="https://almanyar.com" style="color: #047857;">almanyar.com</a> · واتساپ: +90 506 770 8295
-      </p>
-    </div>
-  `;
-
   return sendMail({
     to: payload.to,
     subject: 'به‌روزرسانی پرونده شما — آلمانیار',
-    html,
+    html: renderEmail({
+      preheader: `یادداشت تازه‌ای در ${payload.leadLabel} شما داریم`,
+      heading: payload.name?.trim() ? `${payload.name} عزیز،` : 'سلام،',
+      paragraphs: [
+        `به‌روزرسانی تازه‌ای در «${payload.leadLabel}» شما داریم:`,
+      ],
+      callout: { tone: 'success', text: payload.message },
+      closing: [
+        'اگر سؤالی دارید کافی است به همین ایمیل پاسخ دهید یا از طریق واتساپ در ارتباط باشید.',
+      ],
+    }),
   });
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }

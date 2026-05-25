@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { createToken, appUrl } from '@/lib/tokens';
 import { sendMail } from '@/lib/mailer';
+import { renderEmail } from '@/lib/email-template';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
 
 const Schema = z.object({ email: z.string().email() });
@@ -29,13 +30,18 @@ export async function POST(req: Request) {
       await sendMail({
         to: email,
         subject: 'بازیابی رمز عبور — آلمانیار',
-        html: `<div dir="rtl" style="font-family:Tahoma,Arial;line-height:1.8">
-          <div style="text-align:center;margin-bottom:16px"><img src="${appUrl('/logo.png')}" alt="AlmanYar" width="200" style="max-width:200px;height:auto"/></div>
-          <h2>بازیابی رمز عبور</h2>
-          <p>برای تعیین رمز عبور جدید روی لینک زیر کلیک کنید (تا ۱ ساعت معتبر است):</p>
-          <p><a href="${link}">${link}</a></p>
-          <p>اگر شما این درخواست را نداده‌اید، این ایمیل را نادیده بگیرید.</p>
-        </div>`,
+        html: renderEmail({
+          preheader: 'لینک بازیابی رمز عبور حساب کاربری شما',
+          heading: user.name?.trim() ? `سلام ${user.name}` : 'بازیابی رمز عبور',
+          paragraphs: [
+            'درخواست بازیابی رمز عبور برای حساب کاربری شما دریافت شد. برای تنظیم رمز جدید روی دکمه‌ی زیر کلیک کنید.',
+          ],
+          button: { label: 'تنظیم رمز عبور جدید', url: link },
+          callout: {
+            tone: 'warn',
+            text: `این لینک تا ۱ ساعت معتبر است. اگر شما این درخواست را نداده‌اید، این ایمیل را نادیده بگیرید — حساب شما امن است.\n\nاگر دکمه کار نکرد، این آدرس را در مرورگر باز کنید:\n${link}`,
+          },
+        }),
       });
     } catch (e) {
       console.error('reset email failed', e);

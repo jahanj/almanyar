@@ -1,6 +1,7 @@
 import { randomBytes, createHash } from 'crypto';
 import { prisma } from './prisma';
 import { sendMail } from './mailer';
+import { renderEmail } from './email-template';
 
 type TokenType = 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
 
@@ -49,14 +50,23 @@ export function appUrl(path: string): string {
 export async function sendVerificationEmail(email: string, name?: string): Promise<void> {
   const token = await createToken(email, 'EMAIL_VERIFICATION');
   const link = appUrl(`/verify-email?token=${token}`);
+  const greetingName = name?.trim() ?? '';
+
   await sendMail({
     to: email,
-    subject: 'تایید ایمیل — آلمانیار',
-    html: `<div dir="rtl" style="font-family:Tahoma,Arial;line-height:1.8">
-      <div style="text-align:center;margin-bottom:16px"><img src="${appUrl('/logo.png')}" alt="AlmanYar" width="200" style="max-width:200px;height:auto"/></div>
-      <h2>${name ? `خوش آمدید ${name}` : 'تایید ایمیل'}</h2>
-      <p>برای تایید ایمیل خود روی لینک زیر کلیک کنید (تا ۲۴ ساعت معتبر است):</p>
-      <p><a href="${link}">${link}</a></p>
-    </div>`,
+    subject: 'تأیید ایمیل — آلمانیار',
+    html: renderEmail({
+      preheader: 'یک کلیک تا فعال‌سازی حساب کاربری شما در آلمانیار',
+      heading: greetingName ? `خوش آمدید ${greetingName}` : 'به آلمانیار خوش آمدید',
+      paragraphs: [
+        'برای فعال‌سازی حساب کاربری و دسترسی به پنل پرونده‌ها، لطفاً ایمیل خود را تأیید کنید.',
+        'با تأیید ایمیل، می‌توانید پرونده‌ی مهاجرتی خود را آغاز کنید، مدارک را بارگذاری کنید و در ارتباط مستقیم با مشاور خود قرار بگیرید.',
+      ],
+      button: { label: 'تأیید ایمیل', url: link },
+      callout: {
+        tone: 'info',
+        text: `این لینک تا ۲۴ ساعت معتبر است. اگر دکمه‌ی بالا کار نکرد، این آدرس را در مرورگر باز کنید:\n${link}`,
+      },
+    }),
   });
 }
