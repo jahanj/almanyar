@@ -39,9 +39,8 @@ test.describe('TRUST-04 — Person LD identity', () => {
     expect(person.name).toBe('محمد جهانبانی');
     expect(person.alternateName).toBe('آلمانیار');
 
-    // Photo points at the placeholder filename (TRUST-02). Real-photo swap
-    // updates OWNER_PHOTO_URL → new filename; this assertion changes with it.
-    expect(person.image).toContain('mohammad-jahanbani-placeholder.svg');
+    // Real photo (swapped in 2026-05-25, Phase-6 SEO Pack A follow-up).
+    expect(person.image).toContain('mohammad-jahanbani.jpg');
 
     expect(person.affiliation).toEqual({
       '@type': 'EducationalOrganization',
@@ -49,7 +48,10 @@ test.describe('TRUST-04 — Person LD identity', () => {
       url: 'https://www.medipol.edu.tr',
     });
 
-    expect(person.sameAs, 'sameAs must be [] until real social channels live').toEqual([]);
+    // Phase-6 SEO Pack A populated sameAs with the owner's LinkedIn.
+    expect(person.sameAs).toEqual([
+      'https://www.linkedin.com/in/mohammad-hossein-jahanbani-54802b334',
+    ]);
     expect(person.contactPoint.availableLanguage).toEqual(['fa', 'tr']);
 
     // Broader knowsLanguage list keeps all four — reading/writing knowledge.
