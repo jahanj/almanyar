@@ -1,163 +1,132 @@
-# GermanBiz — مهاجرت تحصیلی به آلمان
+# AlmanYar — آلمانیار
 
-سایت کامل Full-Stack برای مشاوره مهاجرت تحصیلی به آلمان از مسیر ترکیه.
+The source for **[almanyar.com](https://almanyar.com)** — a Persian-language
+consultancy site for students moving to Germany via Turkey. Built and run by
+a single consultant: editorial content, lead intake, document review, and a
+co-managed student workspace, all in one Next.js app.
 
-## استک تکنولوژی
+> سایت رسمی آلمانیار: مشاوره‌ی مهاجرت تحصیلی به آلمان از مسیر ترکیه.
 
-- **Frontend & Backend:** Next.js 14 (App Router) + TypeScript
-- **Styling:** Tailwind CSS + Vazirmatn font
-- **Database:** PostgreSQL + Prisma ORM
-- **Auth:** NextAuth.js (Credentials + JWT)
-- **Email:** Nodemailer (SMTP)
-- **i18n:** فارسی / ترکی / آلمانی + RTL/LTR خودکار
-- **Deployment:** Docker + Docker Compose + Nginx
+## Why this repo is public
 
-## قابلیت‌ها
+This is a **portfolio-style release**. The code is here so anyone can read it
+and follow how the site is built, but it's not open source — see
+[License](#license) below. If you find something interesting, useful, or
+broken, you're very welcome to open an issue or reach out.
 
-- ✅ صفحه اصلی پاسخگو (Responsive) با ۳ زبان
-- ✅ سیستم نظرات و امتیازدهی (تایید توسط ادمین)
-- ✅ فرم تماس / درخواست مشاوره (با اطلاع‌رسانی ایمیل به ادمین)
-- ✅ ثبت‌نام / ورود کاربران
-- ✅ پنل ادمین کامل: داشبورد، مدیریت نظرات، مدیریت درخواست‌ها
-- ✅ Rate limiting روی فرم‌های عمومی
-- ✅ Validation با Zod
-- ✅ آماده برای استقرار روی VPS با Docker
+## Tech stack
 
-## شروع توسعه (Local Development)
+- **Framework:** Next.js 14 (App Router) + TypeScript
+- **Styling:** Tailwind CSS + Vazirmatn (RTL)
+- **Database:** PostgreSQL 16 + Prisma 5
+- **Auth:** NextAuth.js (Credentials + JWT sessions)
+- **Email:** Nodemailer (SMTP — Brevo / Mailgun compatible)
+- **Hero:** GSAP ScrollTrigger pinned cinematic scene
+- **Deployment:** Docker Compose + Nginx + Let's Encrypt
 
-### پیش‌نیازها
-- Node.js 20+
-- PostgreSQL 14+ (یا Docker)
+## What's in it
 
-### مراحل
+- Cinematic scroll-driven homepage (`CinematicJourneyHero`) with a
+  reduced-motion static fallback
+- ~35 deep topic pages auto-generated from typed content modules
+  (visa, study, work, life, exams)
+- Persian-only public site with a registry-driven sitemap + hreflang +
+  `Person` / `WebSite` / `Service` / `BreadcrumbList` JSON-LD
+- Customer dashboard with multi-application document upload and a
+  co-managed roadmap timeline (admin defines steps, student ticks them,
+  admin confirms — two-key DONE)
+- Admin panel for reviews moderation, contact requests, evaluations,
+  applications, document review, task editor, and a per-card "email the
+  customer" button with rate-limited audit log
+- Marketing opt-in with HMAC-signed unsubscribe tokens
+- Per-event notification emails with a 5/user/kind/case/day cap
+
+## Local development
+
+> This setup is for reading and experimenting locally. The repo isn't
+> meant to be re-deployed as-is — branding, content, and contact details
+> belong to AlmanYar.
 
 ```bash
-# 1. نصب وابستگی‌ها
+# 1. Install
 npm install
 
-# 2. کپی env و ویرایش
+# 2. Copy env template and edit
 cp .env.example .env
-# DATABASE_URL، NEXTAUTH_SECRET و ADMIN_PASSWORD رو تنظیم کن
-# NEXTAUTH_SECRET: openssl rand -base64 32
+# Set NEXTAUTH_SECRET (openssl rand -base64 32) and ADMIN_PASSWORD
 
-# 3. اجرای دیتابیس (با Docker)
-docker run -d --name pg \
-  -e POSTGRES_DB=germanbiz -e POSTGRES_USER=germanbiz -e POSTGRES_PASSWORD=changeme \
+# 3. Start Postgres (Docker)
+docker run -d --name almanyar-pg \
+  -e POSTGRES_DB=germanbiz \
+  -e POSTGRES_USER=germanbiz \
+  -e POSTGRES_PASSWORD=password \
   -p 5432:5432 postgres:16-alpine
 
-# 4. اجرای migration و seed
-npx prisma migrate dev --name init
-npm run db:seed
+# 4. Apply migrations and seed
+npx prisma migrate deploy
+npx tsx prisma/seed.ts
 
-# 5. اجرای dev server
+# 5. Run
 npm run dev
+# → http://localhost:3000/fa
 ```
 
-سایت روی `http://localhost:3000` بالا میاد. پنل ادمین: `/admin` (با ایمیل/پسوردی که در `.env` تنظیم کردی).
+Admin panel: `http://localhost:3000/admin` (use the `ADMIN_EMAIL` /
+`ADMIN_PASSWORD` from your `.env`).
 
-## استقرار روی VPS
-
-### پیش‌نیازهای سرور
-- Docker + Docker Compose
-- یک دامنه که به IP سرور اشاره می‌کنه
-- پورت‌های 80 و 443 باز
-
-### مراحل استقرار
-
-```bash
-# 1. روی VPS کلون کن
-git clone <repo-url> /opt/germanbiz
-cd /opt/germanbiz
-
-# 2. متغیرهای محیطی production
-cp .env.example .env
-nano .env
-# تنظیمات کلیدی:
-#   POSTGRES_PASSWORD=<strong-password>
-#   NEXTAUTH_URL=https://yourdomain.com
-#   NEXTAUTH_SECRET=$(openssl rand -base64 32)
-#   ADMIN_EMAIL / ADMIN_PASSWORD
-#   SMTP_* برای ارسال ایمیل
-#   ADMIN_NOTIFY_EMAIL برای دریافت اطلاع درخواست‌های جدید
-
-# 3. ساخت و اجرای کانتینرها
-docker compose up -d --build
-
-# 4. اجرای seed (یک بار)
-docker compose exec app sh -c "npx tsx prisma/seed.ts"
-
-# 5. (اختیاری) دریافت SSL با Certbot
-docker run -it --rm \
-  -v $(pwd)/docker/certbot/conf:/etc/letsencrypt \
-  -v $(pwd)/docker/certbot/www:/var/www/certbot \
-  certbot/certbot certonly --webroot \
-  -w /var/www/certbot -d yourdomain.com
-
-# بعد بلوک HTTPS رو در docker/nginx.conf فعال کن و:
-docker compose restart nginx
-```
-
-### آپدیت
-
-```bash
-git pull
-docker compose up -d --build
-docker compose exec app npx prisma migrate deploy
-```
-
-## ساختار پروژه
+## Repository layout
 
 ```
-.
-├── prisma/
-│   ├── schema.prisma          # مدل‌های دیتابیس
-│   └── seed.ts                # داده‌های اولیه + ادمین
-├── src/
-│   ├── app/
-│   │   ├── [locale]/          # صفحات با زبان (fa/tr/de)
-│   │   ├── admin/             # پنل ادمین
-│   │   ├── api/
-│   │   │   ├── auth/          # NextAuth + register
-│   │   │   ├── reviews/       # API نظرات
-│   │   │   ├── contact/       # API فرم تماس
-│   │   │   └── admin/         # API های ادمین
-│   │   ├── login/
-│   │   ├── register/
-│   │   ├── layout.tsx
-│   │   └── globals.css
-│   ├── components/            # کامپوننت‌های React
-│   ├── lib/
-│   │   ├── prisma.ts          # Prisma Client
-│   │   ├── auth.ts            # NextAuth config
-│   │   ├── i18n.ts            # دیکشنری زبان
-│   │   ├── mailer.ts          # SMTP
-│   │   ├── rate-limit.ts      # Rate limiting in-memory
-│   │   └── admin-guard.ts     # محافظ مسیرهای ادمین
-│   ├── locales/               # متون fa/tr/de
-│   ├── types/                 # تایپ‌های NextAuth
-│   └── middleware.ts          # تشخیص زبان
-├── docker/
-│   └── nginx.conf
-├── Dockerfile
-└── docker-compose.yml
+prisma/
+  schema.prisma           # Postgres models
+  migrations/             # 11 migrations, additive history
+  seed.ts                 # Admin user + sample data
+src/
+  app/
+    [locale]/             # Public marketing pages (fa)
+    admin/                # Admin-only panel
+    dashboard/            # Logged-in customer area
+    api/                  # Public + admin route handlers
+  components/             # React components (cinematic hero, forms, panels)
+  lib/                    # SEO, auth, mailer, notify, owner identity
+  config/                 # Route registry, contact config
+  middleware.ts           # Locale + auth gates
+docker/
+  nginx.conf              # Production reverse proxy + HTTPS
+tests/
+  phase-1..5/             # Playwright suites, grouped per shipping phase
+PHASE-*-PLAN.md           # Per-phase scope + decisions
+PHASE-*-REPORT.md         # Per-phase shipping notes
+DEPLOY.md                 # VPS deploy guide (Docker + Let's Encrypt)
 ```
 
-## نکات امنیتی
+## Production deployment
 
-- حتما `NEXTAUTH_SECRET` رو با مقدار قوی تنظیم کن (`openssl rand -base64 32`)
-- `ADMIN_PASSWORD` پیش‌فرض رو فوراً بعد از اولین ورود از طریق دیتابیس عوض کن
-- روی production: HTTPS رو فعال کن (Let's Encrypt)
-- Rate limit فعلی in-memory هست؛ برای مقیاس بزرگ Redis اضافه کن
+See [`DEPLOY.md`](./DEPLOY.md). Production runs on a single Hetzner VPS
+behind Docker Compose (app + Postgres + nginx + certbot bind-mount).
 
-## دستورات مفید
+**Before every production deploy, run `npm run build` locally** — the
+prebuild hook refreshes the git-lastmod manifest used by the sitemap, and
+SWC's parser catches errors that `tsc --noEmit` misses.
 
-| دستور | توضیح |
-|------|------|
-| `npm run dev` | اجرای dev server |
-| `npm run build` | ساخت production |
-| `npm run start` | اجرای production |
-| `npm run db:seed` | اجرای seed |
-| `npx prisma studio` | UI گرافیکی دیتابیس |
-| `npx prisma migrate dev` | ایجاد migration جدید |
-| `docker compose logs -f app` | لاگ‌های اپ |
-# germanize
+## Documentation
+
+- [`DEPLOY.md`](./DEPLOY.md) — server setup, SSL, ongoing updates
+- [`SECURITY.md`](./SECURITY.md) — vulnerability disclosure policy
+- `PHASE-N-PLAN.md` / `PHASE-N-REPORT.md` — engineering decisions and shipping notes per phase
+
+## License
+
+**© 2026 Mohammad Jahanbani. All rights reserved.**
+
+This code is published for transparency and as a portfolio artifact. It is
+**not open source**: copying, modifying, redistributing, or running it as a
+competing service is not permitted without written permission. You are
+welcome to read it, link to it, and reference it in discussions or articles
+with attribution.
+
+## Contact
+
+- Site: [almanyar.com](https://almanyar.com)
+- Email: info@almanyar.com
+- WhatsApp: +90 506 770 8295
