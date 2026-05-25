@@ -120,11 +120,17 @@ echo '0 3 * * * cd /opt/germanbiz && docker run --rm -v "$(pwd)/docker/certbot/c
 > ⚠️ **قبل از هر استقرار روی پروداکشن، حتماً build رو لوکال اجرا کنید:**
 >
 > ```bash
-> npx next build
+> npm run build      # نه `npx next build`
 > ```
 >
-> `tsc --noEmit` بعضی خطاهای parser SWC رو که Next.js در زمان build می‌گیره
-> نمی‌بینه. در Phase 5 یک destructuring با `!` در LHS از tsc رد شد اما در
+> `npm run build` `prebuild` رو هم اجرا می‌کنه که `scripts/git-lastmod.ts`
+> رو فراخوانی می‌کنه و `src/lib/.git-lastmod.json` رو تازه می‌کنه. این
+> فایل sitemap `lastmod` رو می‌سازه و در Docker build رجنریت نمی‌شه (چون
+> `.git` در `.dockerignore` هست). اگر مستقیم `npx next build` بزنید،
+> `prebuild` فراخوانی نمی‌شه و sitemap با تاریخ قدیمی deploy می‌شه.
+>
+> `tsc --noEmit` هم بعضی خطاهای parser SWC رو نمی‌بینه که Next.js در build
+> می‌گیره — در Phase 5 یک destructuring با `!` در LHS از tsc رد شد اما در
 > build روی سرور fail شد و مجبور شدیم با یک rsync + deploy دوباره جبران کنیم.
 
 ```bash

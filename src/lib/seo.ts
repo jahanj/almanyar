@@ -21,10 +21,12 @@ export const SITE = {
   // Logos / default share image live in /public.
   logo: '/logo.png',
   ogImage: '/og.png',
-  // Public social profiles — empty until owner activates real channels.
-  // When live, add the real URLs and Person.sameAs picks them up automatically.
-  // PHASE-3-REPORT.md TODO list tracks this.
-  social: [] as string[],
+  // Public social profiles — fed into Person.sameAs for entity-resolution
+  // (Google + AI engines use these to confirm the entity behind the site).
+  // Keep canonical profile URLs only — strip tracking params (utm_*, etc.).
+  social: [
+    'https://www.linkedin.com/in/mohammad-hossein-jahanbani-54802b334',
+  ] as string[],
   phone: '+90 506 770 8295',
   email: 'info@almanyar.com',
 } as const;
