@@ -19,6 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/contacts" className="block px-3 py-2 rounded hover:bg-gray-800">📩 درخواست‌ها</Link>
           <Link href="/admin/evaluations" className="block px-3 py-2 rounded hover:bg-gray-800">📝 فرم‌های ارزیابی</Link>
           <Link href="/admin/applications" className="block px-3 py-2 rounded hover:bg-gray-800">📁 پرونده‌ها و مدارک</Link>
+          <Link href="/admin/posts" className="block px-3 py-2 rounded hover:bg-gray-800">📰 اخبار و مقالات</Link>
           <Link href="/admin/stats" className="block px-3 py-2 rounded hover:bg-gray-800">📈 آمار صفحه اصلی</Link>
           <Link href="/" className="block px-3 py-2 rounded hover:bg-gray-800 mt-6 text-yellow-400">↩ بازگشت به سایت</Link>
         </nav>
