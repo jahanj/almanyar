@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import PostEditor, { type EditorChange } from './PostEditor';
 
 /**
- * Phase-8B — reusable create/edit form for posts.
+ * Phase-8C — reusable create/edit form for posts.
  *
- * Plain textarea for body in this phase; Phase 8C swaps it for TipTap.
- * Tag input is comma-separated for now; Phase 8C will add a multi-select
- * with autocomplete.
+ * Rich-text body via TipTap (PostEditor). Bottoms out to bodyHtml on
+ * send so the API stays single-shape; bodyJson lands too for lossless
+ * re-edit.
  */
 
 type Category = { id: string; slug: string; name: string };
@@ -19,7 +20,8 @@ export interface PostInitial {
   slug?: string;
   categoryId?: string;
   excerpt?: string | null;
-  body?: string;
+  bodyHtml?: string;
+  bodyJson?: object | null;
   seoTitle?: string | null;
   metaDescription?: string | null;
   coverImageUrl?: string | null;
@@ -37,7 +39,8 @@ export default function PostForm({ initial }: { initial?: PostInitial }) {
   const [slug, setSlug] = useState(initial?.slug ?? '');
   const [categoryId, setCategoryId] = useState(initial?.categoryId ?? '');
   const [excerpt, setExcerpt] = useState(initial?.excerpt ?? '');
-  const [body, setBody] = useState(initial?.body ?? '');
+  const [bodyHtml, setBodyHtml] = useState(initial?.bodyHtml ?? '');
+  const [bodyJson, setBodyJson] = useState<object | null>(initial?.bodyJson ?? null);
   const [seoTitle, setSeoTitle] = useState(initial?.seoTitle ?? '');
   const [metaDescription, setMetaDescription] = useState(initial?.metaDescription ?? '');
   const [coverImageUrl, setCoverImageUrl] = useState(initial?.coverImageUrl ?? '');
@@ -69,7 +72,8 @@ export default function PostForm({ initial }: { initial?: PostInitial }) {
       const tagSlugs = tagsText.split(',').map((s) => s.trim()).filter(Boolean);
       const payload = {
         title, slug: slug.trim() || undefined,
-        categoryId, excerpt: excerpt || null, body,
+        categoryId, excerpt: excerpt || null,
+        bodyHtml, bodyJson,
         seoTitle: seoTitle || null,
         metaDescription: metaDescription || null,
         coverImageUrl: coverImageUrl || null,
@@ -172,14 +176,15 @@ export default function PostForm({ initial }: { initial?: PostInitial }) {
         />
       </Field>
 
-      <Field label="متن (هر پاراگراف را با یک خط خالی جدا کنید)">
-        <textarea
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          rows={14}
-          className="w-full border rounded-lg px-3 py-2 leading-7"
+      <Field label="متن پست">
+        <PostEditor
+          initialHtml={initial?.bodyHtml ?? ''}
+          initialJson={initial?.bodyJson ?? null}
+          onChange={(c: EditorChange) => {
+            setBodyHtml(c.html);
+            setBodyJson(c.json);
+          }}
         />
-        <p className="text-xs text-gray-500 mt-1">ویرایشگر غنی در Phase 8C می‌آید — فعلاً متن ساده.</p>
       </Field>
 
       <Field label="برچسب‌ها (با ویرگول جدا کنید)">
@@ -210,13 +215,10 @@ export default function PostForm({ initial }: { initial?: PostInitial }) {
               className="w-full border rounded-lg px-3 py-2"
             />
           </Field>
-          <Field label="URL تصویر کاور (Phase 8C: آپلود مستقیم)">
-            <input
-              dir="ltr"
+          <Field label="تصویر کاور">
+            <CoverUploader
               value={coverImageUrl}
-              onChange={(e) => setCoverImageUrl(e.target.value)}
-              placeholder="/posts/cover.jpg"
-              className="w-full border rounded-lg px-3 py-2 font-mono text-sm"
+              onChange={setCoverImageUrl}
             />
           </Field>
           <Field label="Alt تصویر کاور">
@@ -267,5 +269,66 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="block text-sm font-medium text-gray-700 mb-1">{label}</span>
       {children}
     </label>
+  );
+}
+
+function CoverUploader({
+  value, onChange,
+}: { value: string; onChange: (v: string) => void }) {
+  const [uploading, setUploading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const upload = async (file: File) => {
+    setErr(null);
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/admin/uploads/image', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok) {
+        setErr(data.error ?? 'آپلود ناموفق');
+        return;
+      }
+      onChange(data.url);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        <label className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm cursor-pointer">
+          {uploading ? 'در حال آپلود…' : '📎 انتخاب فایل'}
+          <input
+            type="file"
+            className="hidden"
+            accept="image/jpeg,image/png,image/webp"
+            disabled={uploading}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) void upload(f); e.target.value = ''; }}
+          />
+        </label>
+        <input
+          dir="ltr"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="یا URL مستقیم بچسبانید"
+          className="flex-1 border rounded-lg px-3 py-2 font-mono text-xs"
+        />
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange('')}
+            className="text-red-600 text-xs hover:underline"
+          >حذف</button>
+        )}
+      </div>
+      {err && <p className="text-xs text-red-600">{err}</p>}
+      {value && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={value} alt="پیش‌نمایش کاور" className="h-32 rounded border object-cover" />
+      )}
+    </div>
   );
 }

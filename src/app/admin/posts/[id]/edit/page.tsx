@@ -19,18 +19,6 @@ export default async function EditPostPage({ params }: { params: { id: string } 
   });
   if (!post) notFound();
 
-  // The textarea expects the original prose; pre-Phase-8C we round-trip
-  // by stripping the simple <p>/<br/> wrappers we wrote on create. This
-  // is acceptable for plain-text-authored posts; once TipTap is in,
-  // bodyJson becomes the source for editing and this fallback is unused.
-  const bodyText = post.bodyHtml
-    .replace(/<\/p>\s*<p>/g, '\n\n')
-    .replace(/<br\s*\/?>/g, '\n')
-    .replace(/<\/?p>/g, '')
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
-    .trim();
-
   return (
     <div>
       <div className="mb-6">
@@ -45,7 +33,8 @@ export default async function EditPostPage({ params }: { params: { id: string } 
           slug: post.slug,
           categoryId: post.categoryId,
           excerpt: post.excerpt,
-          body: bodyText,
+          bodyHtml: post.bodyHtml,
+          bodyJson: (post.bodyJson as object | null) ?? null,
           seoTitle: post.seoTitle,
           metaDescription: post.metaDescription,
           coverImageUrl: post.coverImageUrl,

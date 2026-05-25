@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/admin-guard';
+import { Prisma } from '@prisma/client';
 import { slugify } from '@/lib/slugify';
-import { plainTextToHtml } from '@/lib/post-html';
 
 /**
  * Phase-8B — admin Post CRUD: list + create.
@@ -20,7 +20,10 @@ const CreateSchema = z.object({
   slug: z.string().max(120).optional(),
   categoryId: z.string().min(1),
   excerpt: z.string().max(300).optional().nullable(),
-  body: z.string().max(50_000).default(''),
+  // 8C: editor sends both. bodyHtml is the SSR field; bodyJson is the
+  // re-edit source. Either can be empty on a draft.
+  bodyHtml: z.string().max(200_000).default(''),
+  bodyJson: z.unknown().nullable().optional(),
   seoTitle: z.string().max(200).optional().nullable(),
   metaDescription: z.string().max(300).optional().nullable(),
   coverImageUrl: z.string().max(500).optional().nullable(),
@@ -97,9 +100,10 @@ export async function POST(req: Request) {
       seoTitle: data.seoTitle ?? null,
       metaDescription: data.metaDescription ?? null,
       excerpt: data.excerpt ?? null,
-      bodyHtml: plainTextToHtml(data.body),
-      // bodyJson is left unset for plain-text-authored posts in 8B;
-      // Phase 8C will populate it from TipTap's JSON serializer.
+      bodyHtml: data.bodyHtml,
+      bodyJson: data.bodyJson === undefined || data.bodyJson === null
+        ? Prisma.JsonNull
+        : (data.bodyJson as Prisma.InputJsonValue),
       coverImageUrl: data.coverImageUrl ?? null,
       coverImageAlt: data.coverImageAlt ?? null,
       status: data.status,

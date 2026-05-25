@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/admin-guard';
+import { Prisma } from '@prisma/client';
 import { slugify } from '@/lib/slugify';
-import { plainTextToHtml } from '@/lib/post-html';
 
 /**
  * Phase-8B — GET / PATCH / DELETE for a single post.
@@ -22,7 +22,8 @@ const PatchSchema = z.object({
   slug: z.string().max(120).optional(),
   categoryId: z.string().min(1).optional(),
   excerpt: z.string().max(300).nullable().optional(),
-  body: z.string().max(50_000).optional(),
+  bodyHtml: z.string().max(200_000).optional(),
+  bodyJson: z.unknown().nullable().optional(),
   seoTitle: z.string().max(200).nullable().optional(),
   metaDescription: z.string().max(300).nullable().optional(),
   coverImageUrl: z.string().max(500).nullable().optional(),
@@ -88,7 +89,12 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 
   if (data.excerpt !== undefined) update.excerpt = data.excerpt;
-  if (data.body !== undefined) update.bodyHtml = plainTextToHtml(data.body);
+  if (data.bodyHtml !== undefined) update.bodyHtml = data.bodyHtml;
+  if (data.bodyJson !== undefined) {
+    update.bodyJson = data.bodyJson === null
+      ? Prisma.JsonNull
+      : (data.bodyJson as Prisma.InputJsonValue);
+  }
   if (data.seoTitle !== undefined) update.seoTitle = data.seoTitle;
   if (data.metaDescription !== undefined) update.metaDescription = data.metaDescription;
   if (data.coverImageUrl !== undefined) update.coverImageUrl = data.coverImageUrl;
