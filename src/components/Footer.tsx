@@ -10,6 +10,7 @@ import {
   WHATSAPP_URL,
 } from '@/config/contact';
 import GermanyTopics from './GermanyTopics';
+import WhatsAppIcon from './contact/WhatsAppIcon';
 
 export default function Footer({ dict, locale = defaultLocale }: { dict: Dictionary; locale?: Locale }) {
   const year = new Date().getFullYear();
@@ -63,7 +64,7 @@ export default function Footer({ dict, locale = defaultLocale }: { dict: Diction
                 className="inline-flex items-center gap-2 transition hover:text-white"
                 dir="ltr"
               >
-                <span aria-hidden="true">💬</span>
+                <WhatsAppIcon className="h-4 w-4 text-[#25D366]" />
                 {WHATSAPP_PHONE}
               </a>
               <p className="text-slate-500">{OFFICE_CITY_FA}</p>
