@@ -138,6 +138,7 @@ model User {
   sessions         Session[]
   tasksStudentTicked Task[] @relation("StudentTickedTasks")
   tasksAdminTicked   Task[] @relation("AdminTickedTasks")
+  posts            Post[]
 }
 
 model Application {
@@ -453,4 +454,82 @@ model EmailRateLimit {
   sentAt DateTime @default(now())
 
   @@index([userId, kind, sentAt])
+}
+
+// Phase-8 §CMS — news/articles published from the admin panel.
+//
+// Topics (`src/lib/topic-content/`) and Posts are TWO content layers:
+//   - Topics  = evergreen authority pages, code-shaped TS files, ~35
+//               existing entries, not in DB
+//   - Posts   = time-ordered news/updates, admin-editable via TipTap,
+//               render at /fa/news/<slug>
+//
+// `bodyJson` is the source of truth (TipTap can re-edit it precisely);
+// `bodyHtml` is pre-rendered for fast public reads.
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Post {
+  id              String       @id @default(cuid())
+  slug            String       @unique
+  title           String
+  // Optional SEO override; if null the public page falls back to `title`.
+  seoTitle        String?
+  metaDescription String?      @db.Text
+  // 1-2 sentence summary for feed cards.
+  excerpt         String?      @db.Text
+  // TipTap-rendered HTML for fast SSR.
+  bodyHtml        String       @db.Text
+  // TipTap JSON snapshot — re-edit fidelity.
+  bodyJson        Json?
+  coverImageUrl   String?
+  coverImageAlt   String?
+  status          PostStatus   @default(DRAFT)
+  // Stamped the first time status flips to PUBLISHED; not cleared on
+  // unpublish (so a re-publish keeps the original publish date for SEO).
+  publishedAt     DateTime?
+  authorId        String?
+  categoryId      String
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  author    User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  category  PostCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  tags      PostsOnTags[]
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@index([slug])
+}
+
+model PostCategory {
+  id    String @id @default(cuid())
+  slug  String @unique
+  name  String
+  // Display order in the admin/category-list UI. Lower = first.
+  order Int    @default(0)
+  posts Post[]
+}
+
+model PostTag {
+  id    String        @id @default(cuid())
+  slug  String        @unique
+  name  String
+  posts PostsOnTags[]
+}
+
+// Explicit M2M join table — gives us a stable composite PK and clean
+// cascade semantics (delete a Post → its tag links go too; delete a
+// Tag → its post links go too; neither side orphans).
+model PostsOnTags {
+  post   Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String
+  tag    PostTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId  String
+
+  @@id([postId, tagId])
+  @@index([tagId])
 }
