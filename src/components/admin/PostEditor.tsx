@@ -4,7 +4,8 @@ import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import InternalLinkPicker from './InternalLinkPicker';
 
 /**
  * Phase-8C — TipTap rich-text editor for the post form.
@@ -67,15 +68,36 @@ export default function PostEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
+  const [pickerOpen, setPickerOpen] = useState(false);
+
   return (
     <div className="border border-slate-300 rounded-lg overflow-hidden bg-white">
-      <Toolbar editor={editor} />
+      <Toolbar editor={editor} onOpenInternalLink={() => setPickerOpen(true)} />
       <EditorContent editor={editor} />
+      <InternalLinkPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onPick={(href, title) => {
+          if (!editor) return;
+          // If text is selected, just wrap it. Otherwise insert the title
+          // as the link text so the editor doesn't end up with a bare URL.
+          const { from, to } = editor.state.selection;
+          if (from === to) {
+            editor.chain().focus()
+              .insertContent(`<a href="${href}">${title}</a>`)
+              .run();
+          } else {
+            editor.chain().focus().extendMarkRange('link').setLink({ href }).run();
+          }
+        }}
+      />
     </div>
   );
 }
 
-function Toolbar({ editor }: { editor: Editor | null }) {
+function Toolbar({
+  editor, onOpenInternalLink,
+}: { editor: Editor | null; onOpenInternalLink: () => void }) {
   if (!editor) return null;
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50 px-2 py-1.5">
@@ -102,8 +124,9 @@ function Toolbar({ editor }: { editor: Editor | null }) {
           }
           editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
         }}
-        title="لینک"
+        title="لینک خارجی"
       >🔗</Btn>
+      <Btn onClick={onOpenInternalLink} title="لینک داخلی به یک پست یا راهنما">📎</Btn>
       <div className="ms-auto text-xs text-slate-500">
         TipTap • RTL
       </div>
