@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     locale: 'fa_IR',
     url: SITE.url,
-    images: [{ url: SITE.ogImage, width: 1248, height: 832, alt: SITE.name }],
+    images: [{ url: SITE.ogImage, width: 1536, height: 1024, alt: SITE.name }],
   },
   twitter: { card: 'summary_large_image', site: SITE.twitter, images: [SITE.ogImage] },
   robots: {

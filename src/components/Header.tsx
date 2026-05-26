@@ -41,12 +41,18 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
   }, [locale]);
 
   return (
+    // Phase-7-followup — navbar permanently dark. The logo PNG ships
+    // with a solid black background (AI-gen artwork; no transparency
+    // available without ImageMagick). Matching the navbar background
+    // to the logo's so the logo blends seamlessly instead of appearing
+    // inside a visible "tub". Apple-style: dark chrome stays dark in
+    // every scroll state for brand consistency.
     <header
       className={[
         'fixed inset-x-0 top-0 z-50 transition-all duration-300',
         scrolled
-          ? 'border-b border-slate-200/80 bg-white/90 shadow-soft backdrop-blur-md'
-          : 'border-b border-transparent bg-white/70 backdrop-blur-sm',
+          ? 'border-b border-white/10 bg-slate-950/85 shadow-card backdrop-blur-xl'
+          : 'border-b border-transparent bg-slate-950/40 backdrop-blur-md',
       ].join(' ')}
     >
       <nav className="container mx-auto px-4 sm:px-6 py-3">
@@ -55,8 +61,8 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
             <Image
               src="/logo.png"
               alt={dict.meta.title}
-              width={1248}
-              height={832}
+              width={1536}
+              height={1024}
               priority
               className="h-11 w-auto md:h-12"
             />
@@ -67,14 +73,14 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
               <a
                 key={link.href}
                 href={link.href}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
               >
                 {link.label}
               </a>
             ))}
             <Link
               href={`/${locale}/evaluation`}
-              className="ms-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              className="ms-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-slate-950"
             >
               {dict.nav.evaluation}
             </Link>
@@ -85,14 +91,14 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
               <div className="hidden items-center gap-2 md:flex">
                 <Link
                   href="/dashboard"
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
                 >
                   {dict.nav.dashboard}
                 </Link>
                 {session.user.role === 'ADMIN' && (
                   <Link
                     href="/admin"
-                    className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                    className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
                   >
                     {dict.nav.adminPanel}
                   </Link>
@@ -100,7 +106,7 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
                 <button
                   type="button"
                   onClick={() => signOut({ callbackUrl: `/${locale}` })}
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
                 >
                   {dict.nav.logout}
                 </button>
@@ -109,13 +115,13 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
               <div className="hidden items-center gap-2 text-sm md:flex">
                 <Link
                   href="/login"
-                  className="rounded-lg px-3 py-2 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                  className="rounded-lg px-3 py-2 font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
                 >
                   {dict.nav.login}
                 </Link>
                 <Link
                   href="/register"
-                  className="rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white transition hover:bg-slate-800"
+                  className="rounded-xl bg-white px-4 py-2 font-semibold text-slate-900 transition hover:bg-slate-100"
                 >
                   {dict.nav.register}
                 </Link>
@@ -125,7 +131,7 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
             <button
               type="button"
               onClick={() => setOpen((value) => !value)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 lg:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-white transition hover:bg-white/10 lg:hidden"
               aria-label={open ? 'بستن منو' : 'باز کردن منو'}
               aria-expanded={open}
               aria-controls="mobile-navigation"
@@ -145,7 +151,7 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
         {open && (
           <div
             id="mobile-navigation"
-            className="mt-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-card lg:hidden"
+            className="mt-3 rounded-2xl border border-white/10 bg-slate-950/95 p-4 shadow-card backdrop-blur-xl lg:hidden"
           >
             <div className="grid gap-1">
               <Link
@@ -161,19 +167,19 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="rounded-xl px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                  className="rounded-xl px-4 py-3 text-sm font-medium text-white/90 transition hover:bg-white/10"
                 >
                   {link.label}
                 </a>
               ))}
 
-              <div className="mt-2 border-t border-slate-100 pt-2">
+              <div className="mt-2 border-t border-white/10 pt-2">
                 {session?.user ? (
                   <div className="grid gap-1">
                     <Link
                       href="/dashboard"
                       onClick={() => setOpen(false)}
-                      className="rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                      className="rounded-xl px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
                     >
                       {dict.nav.dashboard}
                     </Link>
@@ -181,7 +187,7 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
                       <Link
                         href="/admin"
                         onClick={() => setOpen(false)}
-                        className="rounded-xl px-4 py-3 text-sm font-semibold text-brand-700 hover:bg-slate-50"
+                        className="rounded-xl px-4 py-3 text-sm font-semibold text-brand-300 hover:bg-white/10"
                       >
                         {dict.nav.adminPanel}
                       </Link>
@@ -189,7 +195,7 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
                     <button
                       type="button"
                       onClick={() => signOut({ callbackUrl: `/${locale}` })}
-                      className="rounded-xl px-4 py-3 text-start text-sm font-medium text-slate-700 hover:bg-slate-50"
+                      className="rounded-xl px-4 py-3 text-start text-sm font-medium text-white/90 hover:bg-white/10"
                     >
                       {dict.nav.logout}
                     </button>
@@ -199,14 +205,14 @@ export default function Header({ dict, locale }: { dict: Dictionary; locale: Loc
                     <Link
                       href="/login"
                       onClick={() => setOpen(false)}
-                      className="rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700"
+                      className="rounded-xl border border-white/15 px-4 py-3 text-center text-sm font-medium text-white/90"
                     >
                       {dict.nav.login}
                     </Link>
                     <Link
                       href="/register"
                       onClick={() => setOpen(false)}
-                      className="rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white"
+                      className="rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-slate-900"
                     >
                       {dict.nav.register}
                     </Link>

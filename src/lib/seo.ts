@@ -125,7 +125,7 @@ export function pageMetadata(input: PageMetaInput): Metadata {
       description: safeDescription,
       locale: OG_LOCALE[locale],
       alternateLocale: locales.filter((l) => l !== locale).map((l) => OG_LOCALE[l]),
-      images: [{ url: ogImage, width: 1248, height: 832, alt: title }],
+      images: [{ url: ogImage, width: 1536, height: 1024, alt: title }],
     },
     twitter: {
       card: 'summary_large_image',
@@ -171,7 +171,7 @@ export function rootPageMetadata(input: {
       title,
       description: safeDescription,
       locale: 'fa_IR',
-      images: [{ url: ogImage, width: 1248, height: 832, alt: title }],
+      images: [{ url: ogImage, width: 1536, height: 1024, alt: title }],
     },
     twitter: { card: 'summary_large_image', title, description: safeDescription, images: [ogImage], site: SITE.twitter },
   };
