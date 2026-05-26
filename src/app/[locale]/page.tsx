@@ -62,6 +62,9 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
         ]}
       />
       <HomeClient
+        dict={dict}
+        locale={params.locale}
+        stats={stats}
         latestNewsSlot={<LatestNewsStrip posts={latestPosts} />}
       />
     </>
