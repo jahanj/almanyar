@@ -2,30 +2,31 @@
 
 import { useState, type ReactNode } from 'react';
 import CinematicJourneyHero from './journey/CinematicJourneyHero';
+import TrustBar from './TrustBar';
+import UniversityMarquee from './UniversityMarquee';
+import TrustModel from './TrustModel';
+import PanelLanding from './PanelLanding';
+import Services from './Services';
+import ContactForm from './ContactForm';
+import CtaBanner from './CtaBanner';
 import ReviewModal from './ReviewModal';
-import ThreePaths from './home/ThreePaths';
-import WhyAlmanYar from './home/WhyAlmanYar';
-import JourneyTimeline from './home/JourneyTimeline';
-import SocialProof from './home/SocialProof';
-import FinalCTA from './home/FinalCTA';
 import type { Dictionary, Locale } from '@/lib/i18n';
 import type { SiteStatsView } from '@/lib/site-stats';
 
 /**
- * Phase-9 — homepage redesign (REVISION: restored the original
- * CinematicJourneyHero per user feedback; kept the 5 new sections
- * + new /fa/contact + /fa/about update).
+ * Phase-8F — homepage trim.
  *
- * Sections:
- *   1. CinematicJourneyHero (original 5-scene SVG GSAP scroll, kept)
- *   2. ThreePaths            — Study / Ausbildung / Work
- *   3. WhyAlmanYar           — 4 trust pillars
- *   4. JourneyTimeline       — 6 steps Turkey → Germany
- *   5. SocialProof           — 1 featured + 2 secondary
- *   6. {latestNewsSlot}      — 3 most recent posts (server-rendered)
- *   7. FinalCTA              — conversion banner → /fa/evaluation
+ * Removed: Process, Education, TurkeyResidence, Testimonials.
+ * Each section's content still lives on its dedicated hub page:
+ *   - Process       → /fa/how-it-works
+ *   - Education     → /fa/study-germany
+ *   - TurkeyResidence → /fa/turkey-residence
+ *   - Testimonials  → kept as data in DB; the hero scene still shows
+ *                     star rating + count, so social proof remains.
  *
- * Header and Footer come from `[locale]/layout.tsx` (BUG-05 fix).
+ * Added: `latestNewsSlot` — a server-rendered "Latest news" strip
+ * passed in as a slot so we don't have to fetch Prisma data inside
+ * a `'use client'` boundary. Sits between Services and CtaBanner.
  */
 
 export default function HomeClient({
@@ -41,6 +42,7 @@ export default function HomeClient({
 }) {
   const [open, setOpen] = useState(false);
 
+  // Header and Footer are rendered by `[locale]/layout.tsx` — see BUG-05.
   return (
     <>
       <main>
@@ -50,17 +52,20 @@ export default function HomeClient({
           stats={stats}
           onReviewClick={() => setOpen(true)}
         />
-        <ThreePaths />
-        <WhyAlmanYar />
-        <JourneyTimeline />
-        <SocialProof />
+        <UniversityMarquee />
+        <TrustBar dict={dict} />
+        <TrustModel locale={locale} />
+        <PanelLanding />
+        <Services dict={dict} />
         {latestNewsSlot}
-        <FinalCTA />
+        <CtaBanner dict={dict} locale={locale} />
+        <ContactForm dict={dict} />
       </main>
       <ReviewModal
         open={open}
         onClose={() => setOpen(false)}
         dict={dict}
+        // Testimonials section is gone; nothing to re-fetch on submit.
         onSubmitted={() => {}}
       />
     </>

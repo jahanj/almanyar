@@ -10,7 +10,6 @@ import { resolveUpdatedAt } from '@/lib/dates';
 import { ABOUT } from '@/lib/owner-content';
 import { OWNER, OWNER_PHOTO_URL, OWNER_PHOTO_WIDTH, OWNER_PHOTO_HEIGHT } from '@/lib/owner';
 import { WHATSAPP_URL } from '@/config/contact';
-import PanelLanding from '@/components/PanelLanding';
 
 export function generateMetadata({ params }: { params: { locale: Locale } }): Metadata {
   return pageMetadata({
@@ -188,19 +187,13 @@ export default function AboutPage({ params }: { params: { locale: Locale } }) {
               شروع گفت‌وگو در واتساپ
             </a>
             <Link
-              href={localePath(params.locale, '/contact')}
+              href={localePath(params.locale, '#contact')}
               className="inline-flex items-center justify-center rounded-xl border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
             >
               ارسال پیام از طریق فرم تماس
             </Link>
           </div>
         </section>
-
-        {/* Phase-9 §3 — PanelLanding relocated from homepage. The dashboard
-            walkthrough lives here under About so visitors who want to know
-            "how does the panel work?" can read it without it dominating
-            the homepage. */}
-        <PanelLanding />
       </main>
     </div>
   );
