@@ -1,73 +1,52 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
-import CinematicJourneyHero from './journey/CinematicJourneyHero';
-import TrustBar from './TrustBar';
-import UniversityMarquee from './UniversityMarquee';
-import TrustModel from './TrustModel';
-import PanelLanding from './PanelLanding';
-import Services from './Services';
-import ContactForm from './ContactForm';
-import CtaBanner from './CtaBanner';
-import ReviewModal from './ReviewModal';
-import type { Dictionary, Locale } from '@/lib/i18n';
-import type { SiteStatsView } from '@/lib/site-stats';
+import { type ReactNode } from 'react';
+import CinematicHeroV2 from './journey/CinematicHeroV2';
+import ThreePaths from './home/ThreePaths';
+import WhyAlmanYar from './home/WhyAlmanYar';
+import JourneyTimeline from './home/JourneyTimeline';
+import SocialProof from './home/SocialProof';
+import FinalCTA from './home/FinalCTA';
 
 /**
- * Phase-8F — homepage trim.
+ * Phase-9 — homepage redesign.
  *
- * Removed: Process, Education, TurkeyResidence, Testimonials.
- * Each section's content still lives on its dedicated hub page:
- *   - Process       → /fa/how-it-works
- *   - Education     → /fa/study-germany
- *   - TurkeyResidence → /fa/turkey-residence
- *   - Testimonials  → kept as data in DB; the hero scene still shows
- *                     star rating + count, so social proof remains.
+ * 7 sections, sharp hierarchy, conversion-focused:
+ *   1. CinematicHeroV2     — scroll-pinned Ken Burns + 5 scenes
+ *   2. ThreePaths          — Study / Ausbildung / Work
+ *   3. WhyAlmanYar         — 4 trust pillars
+ *   4. JourneyTimeline     — 6 steps Turkey → Germany → Settlement
+ *   5. SocialProof         — 1 featured + 2 secondary testimonials
+ *   6. {latestNewsSlot}    — 3 most recent posts (server-rendered)
+ *   7. FinalCTA            — single conversion banner → /fa/evaluation
  *
- * Added: `latestNewsSlot` — a server-rendered "Latest news" strip
- * passed in as a slot so we don't have to fetch Prisma data inside
- * a `'use client'` boundary. Sits between Services and CtaBanner.
+ * Retired (relocated, not lost):
+ *   - UniversityMarquee   → /fa/study-germany (future)
+ *   - TrustBar             → covered by hero + WhyAlmanYar
+ *   - TrustModel           → replaced by WhyAlmanYar
+ *   - PanelLanding         → moved to /fa/about
+ *   - Services             → replaced by ThreePaths
+ *   - inline ContactForm   → moved to /fa/contact
+ *   - DB-driven Testimonials → replaced by curated SocialProof
+ *   - CtaBanner            → replaced by FinalCTA
+ *
+ * Header and Footer come from `[locale]/layout.tsx` (BUG-05 fix).
  */
 
 export default function HomeClient({
-  dict,
-  locale,
-  stats,
   latestNewsSlot,
 }: {
-  dict: Dictionary;
-  locale: Locale;
-  stats: SiteStatsView;
   latestNewsSlot?: ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
-
-  // Header and Footer are rendered by `[locale]/layout.tsx` — see BUG-05.
   return (
-    <>
-      <main>
-        <CinematicJourneyHero
-          dict={dict}
-          locale={locale}
-          stats={stats}
-          onReviewClick={() => setOpen(true)}
-        />
-        <UniversityMarquee />
-        <TrustBar dict={dict} />
-        <TrustModel locale={locale} />
-        <PanelLanding />
-        <Services dict={dict} />
-        {latestNewsSlot}
-        <CtaBanner dict={dict} locale={locale} />
-        <ContactForm dict={dict} />
-      </main>
-      <ReviewModal
-        open={open}
-        onClose={() => setOpen(false)}
-        dict={dict}
-        // Testimonials section is gone; nothing to re-fetch on submit.
-        onSubmitted={() => {}}
-      />
-    </>
+    <main>
+      <CinematicHeroV2 />
+      <ThreePaths />
+      <WhyAlmanYar />
+      <JourneyTimeline />
+      <SocialProof />
+      {latestNewsSlot}
+      <FinalCTA />
+    </main>
   );
 }
