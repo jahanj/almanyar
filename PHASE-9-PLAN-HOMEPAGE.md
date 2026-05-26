@@ -1,7 +1,15 @@
 # Phase 9 — Homepage Redesign (DESIGN DOC, no code yet)
 
 **Date:** 2026-05-25
-**Status:** PLAN only — implementation gated on user approval.
+**Status:** Decisions locked 2026-05-25; implementation in progress.
+
+**Locked decisions:**
+- Hero treatment = single AI-generated cinematic image + Ken Burns parallax (drop GSAP 5-scene cinematic for the homepage; the journey component is still cinematic via the new Timeline section)
+- PanelLanding relocates to `/fa/about` as a single section
+- ContactForm relocates to a dedicated `/fa/contact` page
+- Phasing = one ship (9A–9E in one session, deployed once together)
+- Journey timeline steps deep-link into topic pages (my default recommendation)
+- Featured articles = 3 most recent published (current behavior; no editorial flag yet)
 **Current homepage (post-Phase 8F):** 8 sections — Cinematic hero, UniversityMarquee, TrustBar, TrustModel, PanelLanding, Services, LatestNewsStrip, CtaBanner, ContactForm.
 **This plan reduces to 7 sections** with sharper hierarchy and conversion focus.
 
